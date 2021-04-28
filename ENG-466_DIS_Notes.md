@@ -4,7 +4,7 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/4/11
+> Last updated on 2021/4/29
 
 # Lecture1-Lecture4
 
@@ -320,8 +320,350 @@ compared to Boids’ Sensory System (ideal)
 
 :construction:
 
+# Lecture8-Multi-Level Modeling: Complex Examples and Combination with Machine Learning
+
+:construction:
+
+# Lecture9-An Introduction to Particle Swarm Optimization and Metaheuristic Optimization for Single-Robot Systems
+
+## 9.1 Machine-learning-based methods
+
+### 9.1.1 Rationale for embedded systems
+
+#### 9.1.1.1 Why Machine Learning?
+
+- **Complementary** to a **model**-based approaches
+
+  **data**-driven
+
+- Particularly powerful when **low-level details matter** (optimization) and/or **good models do not exist** (design)!
+
+  hard to find optimal
+
+- **Automatic** design and optimization techniques
+
+- Individual real-time **adaptation to new or unpredictable** environmental/system **conditions**
+
+- **Role of the engineer refocused to performance** specification, problem encoding, and customization of algorithmic parameters (and perhaps operators)
+
+#### 9.1.1.2 Why Metaheuristic Methods?
+
+- design/optimization space is too large (infinite)/too computationally expensive  to searched
+
+  NP-hard problem
+
+- robust to noise, nonlinearities, discontinuities, non-convexity, multi-modal functions
+
+- have several possible search spaces
+
+  parameters (continuous and discrete spaces), rules, software/hardware, structures/architectures
+
+  可以从多个方向进行优化
+
+### 9.1.2 Terminology
+
+#### 9.1.2.1 Classification
+
+- Classification Axis 1
+  - **Supervised** learning: training and test data are separated; minimization of the error
+  - **Unsupervised** learning: offline learning; no distinction between training and test data set; structure extraction from the data set
+  - **Reinforcement** learning: online learning; no pre-established training and evaluation data sets; judges its performance according to a given metric
+
+- Classification Axis 2
+
+  - **In simulation**: reproduces the real scenario in simulation; the learned solutions are then downloaded onto real hardware after finish training
+  - **Hybrid**: most of the time in simulation, last period of the learning process on real hardware
+  - **Hardware-in-the-loop**: from the beginning on real hardware (no simulation)
+
+- Classification Axis 3
+
+  computational resources requirement
+
+  - On-board: machine-learning algorithm run on the system to be learned, no external unit
+  - Off-board: algorithm runs off-board and the system to be learned just **serves as embodied implementation**
+
+- Classification Axis 4
+
+  - Population-based (“multi-agent”): a **population** of candidate solutions is **maintained by the algorithm**; agents can **represent directly the candidate solution in the search space**
+
+    Genetic Algorithms (individuals), Particle Swarm Optimization (particles), Ant Colony Optimization (ants/tours)
+
+  - Hill-climbing (“single-agent”): ML algorithm works on a single candidate solution and try to improve on it
+
+    (stochastic) gradient-based methods
+
+#### 9.1.2.1 Selected Evaluative Machine-Learning Techniques
+
+- **Evolutionary Computation -> population-based**
+  - **Genetic Algorithms (GA)** 
+  - Genetic Programming (GP)
+  - Evolutionary Strategies (ES)
+- **Swarm Intelligence -> population-based**
+  - **Ant Colony Optimization (ACO), W1-2**
+  - **Particle Swarm Optimization (PSO), W9**
+- **Learning -> hill-climbing**
+  - **In-Line Learning (variable thresholds), W11**
+  - **In-Line Adaptive Learning, W8**
+  - Reinforcement Learning (RL)
+
+## 9.2 Particle Swarm Optimization (PSO)
+
+### 9.2.1 Algorithm
+
+#### 9.2.1.1 Why PSO?
+
+- Also **comes from the Swarm Intelligence community** like ACO
+- **Competitive** metaheuristic especially **on continuous optimization** problems
+- Appears to **deliver competitive results with population sizes smaller** than those of other metaheuristic methods
+- Well s**uited to distributed implementation** with concept of neighborhood
+- **Early** formal results on **convergence**
+
+#### 9.2.1.2 Inspiration and Principles
+
+- Imitate, Evaluate, and Compare
+- Inspired from natural phenomenon like bird flocking
+
+#### 9.2.1.3 Terminology
+
+- Swarm: **pool of candidate solutions** tested in one time step
+- Particle: represents a candidate solution in the hyperspace
+- Neighborhood: set of particles with which a given particle share performance info
+- Iteration: for each iter, metaheuristi coperators is applied to generate a new pool of candidate solutions
+- Fitness function: measurement of efficacy of a given candidate solution **during the evaluation span**
+- Evaluation span: evaluation period of each candidate solution during a single time step
+- Life span: number of iterations a candidate solution is present/survived
+- Swarm manager: update parameters (velocities and position) for each particle according to the main PSO loop
+
+#### 9.2.1.4 Algorithm Flowchart
+
+<img src="./pics/dis/w9_pso_flowchart.png" alt="w9_pso_flowchart" style="zoom:30%;" />
+
+- randomized initialization
+- Ex. of end criteria: \# of time steps; best solution performance; ...
+
+#### 9.2.1.5 The Main PSO Loop
+
+> Example: velocity vector $v$ and position vector $x$
+
+- Function
+  - rand(): uniformly distributed random
+- Parameters
+  - w: velocity intertia
+  - c_p: personal best coefficient/weight
+  - c_n: neighborhood best coefficient/weight
+- Variables
+  - $x_{ij}(t)$: **position** of particle iin the j-th dimension at iteration t
+  - $v_{ij}(t)$: **velocity** of particle iin the j-th dimension at iteration t
+  - $x_{ij}^*(t)$: with maximal fitness, **personal best**
+  - $x_{i'j}^*(t)$: with maximal fitness in the neighborhood  of particle i, **neighborhood best**
+
+> (Eberhart, Kennedy, and Shi, 1995, 1998)
+
+- algorithm
+
+  <img src="./pics/dis/w9_pso_algorithm.png" alt="w9_pso_algorithm" style="zoom:40%;" />
+
+- Vector Visualization
+
+  <img src="./pics/dis/w9_pso_vec_viz.png" alt="w9_pso_vec_viz" style="zoom:40%;" />
+
+
+
+#### 9.2.1.6 Neighborhood Types
+
+> How to choose neighbor?
+
+- Sizes
+
+  - index **considers** also the **particle itself**
+
+  - Local: only k neighbors considered over m particles in the population
+
+    1 < k < m; k=1 means no information from other particles for update
+
+  - Global: all particles
+
+- Topology
+
+  - Indexed
+  - Geographical
+  - Social
+  - Random
+
+- Exaple
+
+  | Type                             | Visualization                                                |
+  | -------------------------------- | ------------------------------------------------------------ |
+  | Indexed and Circular (**lbest**) | <img src="./pics/dis/w9_pso_ex1.png" alt="w9_pso_ex1" style="zoom:40%;" /> |
+  | Geographical & Social            | <img src="./pics/dis/w9_pso_ex2.png" alt="w9_pso_ex2" style="zoom:40%;" /> |
+
+  
+
+### 9.2.2 Comparison between PSO and GA
+
+- **Genetic Algorithms (GAs)**
+  - an older and widely spread metaheuristic technique
+  - designed for discrete optimization problems
+  - has been also applied to Evolutionary Robotics
+- **PSO**: often compared with GA but it does not at all leverage evolutionary principles
+
+#### 9.2.2.1 Comparison on Benchmark Functions
+
+- Goal: **minimization** of a given benchmark functions
+- Standard: thirty dimensions (n = 30) and a fixed number of iterations
+
+> Pugh et al, IEEE SIS 2005
+>
+> :exclamation: **distributed handout but biased results (small population, limited numbers of runs)**
+
+<img src="./pics/dis/w9_pso_ga_function.png" alt="w9_pso_ga_function" style="zoom:50%;" />
+
+<img src="./pics/dis/w9_pso_ga_function_viz.png" alt="w9_pso_ga_function_viz" style="zoom:50%;" />
+
+- Parameters
+  - GA: Roulette Wheel for selection, mutation applies numerical adjustment to gene
+  - PSO: lbestring topology with neighborhood of size 3
+- Result
+  - PSO performs better on Generalized **Rosenbrock** and **Rastrigin**
+  - GA performs better on **Griewank**
+  - For Sphere case, GA and PSO can both reach the optimal, but with different speed
+- Overview
+  - **PSO outperforms GA on most continuous optimization problems** in recent researches
+  - Because of **random aspects**, very **difficult** to **analyze** either metaheuristic or **make guarantees about performance**
+
+## 9.3 Metaheuristic optimization for single-robot systems
+
+### 9.3.1 Examples in control design and optimization (obstacle avoidance, homing)
+
+#### 9.3.1.1 Neural Network Controller
+
+<img src="./pics/dis/w9_nn_controller.png" alt="w9_nn_controller" style="zoom:50%;" />
+
+- evolve **synaptic weights**
+- Hebbian rules for dynamic change of the weights, transfer function parameters
+
+#### 9.3.1.2 Optimizing Robot Controllers
+
+- worth using GA/PSO if the number of parameters to be tuned is important
+- Controller optimization results in behavioral design
+- Example of controller optimization using an evolutionary algorithm
+
+<img src="./pics/dis/w9_pso_ga_controller.png" alt="w9_pso_ga_controller" style="zoom:50%;" />
+
+#### 9.3.1.3 Evolving Obstacle Avoidance
+
+> Floreano and Mondada 1996
+>
+> **with horizontal proximity sensors**
+>
+> GA
+
+- **performance (fitness function)**: the robot should go as straight as possible; and rotate as less as possible
+  $$
+  \Phi=V(1-\sqrt{\Delta V})(1-i)
+  $$
+  - $V \in [0,1]$-mean speed of wheels
+  - $\Delta v \in [0,1]$-absolute algebraic difference between wheel speeds
+  - $i$-activation value of the sensor with the highest activity
+  - Note: Fitness **accumulated during evaluation span**, normalized over number of control loops (actions).
+
+- Implementation
+
+  - on-line
+  - off-board (PC-hosted)
+  - hardware-in-the-loop
+  - population-based
+  - Note
+    - Direction of motion **NOT encoded** in the fitness function
+    - **GA automatically discovers asymmetry** in the sensory system configuration (6 front and 2 behind)
+
+#### 9.3.1.4 Evolving Homing Behavior
+
+> Floreano and Mondada 1996
+>
+> **with ground proximity sensors** to detect the ground change
+>
+> GA
+
+| Setup                                                        | Sensors                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="./pics/dis/w9_evolve_home_setup.png" alt="w9_evolve_home_setup" style="zoom:60%;" /> | <img src="./pics/dis/w9_evolve_home_sensor.png" alt="w9_evolve_home_sensor" style="zoom:70%;" /> |
+
+- **Fitness function**
+  $$
+  \Phi=V(1-i)
+  $$
+
+  - Fitness **accumulated** during life span, **normalized over maximal number (150) of control loops** (actions).
+  - **No explicit expression of battery level/duration** in the fitness function
+  - Chromosome length: 102 parameters (real-to-real encoding)
+  - Generations: 240, 10 days hardware-in-the-loop evolution
+
+### 9.3.2 Examples in system design and optimization (locomotion)
+
+> - **Not only Control Optimization**
+>
+> - Automatic **Hardware-Software Co-Design and Optimization** in Simulation and Validation with Real Robots
+
+- Evidence: Nature evolve HW and SW at the same time …
+
+- Simulators could explore design solution with **co-evolution (co-design) of control and morphological characteristics**
+
+  body shape, number of sensors, placement of sensors, etc.
+
+#### 9.3.2.1 Evolving Control and Robot Morphology
+
+> Lipson and Pollack, 2000
+
+- Arbitrary recurrent ANN
+- Passive and active (linear actuators) links
+- **Fitness function**: **net distance** traveled by the center of mass in a fixed duration
+
+<img src="./pics/dis/w9_codesign_ex.png" alt="w9_codesign_ex" style="zoom:50%;" />
+
+- Problem: simulator not enough realistic -> not good enough **simulated friction**
+
+#### 9.3.2.2 Issues for Evolving Real Systems by Exploiting Simulation
+
+>  Goal of Co-design: speeding up evolution
+
+1. Evolve in simulation, download on real HW
+
+   hard to Bridge the simulation-reality gap
+
+2. Evolve with real HW in the loop
+
+   evaluation span too time consuming and fragile hardware
+
+#### 9.3.2.3 Co-Evolution of Simulation and Reality
+
+> Bongard, Zykov, and Lipson, 2006
+>
+> https://youtu.be/x579QKA6fkY
+
+<img src="./pics/dis/w9_codesign_ex2.png" alt="w9_codesign_ex2" style="zoom:40%;" />
+
+Bongard et al, Resilient Machines Through Continuous Self-Modeling, Science, 2006
+
+## 9.4 Take Home Messages
+
+- Machine-learning algorithms can be classified as supervised, unsupervised, and reinforcement-based
+
+- **Evaluative** techniques are key for **robotic learning**
+
+- **Evaluative techniques can be used for design and optimization** of behaviors whose complexity goes beyond obstacle avoidance
+
+  不仅仅限于避障
+
+- Two robust **population-based metaheuristics** are PSO and GA
+
+- Metaheuristic techniques can be also used for design and optimization of hardware features with the help of simulation tools
+
+- Co-optimization techniques (e.g., co-evolution) can be used to shape simultaneously hardware and software features or control and model/simulation features
+
 # Misc. 
 
 - range and bearing 距离与方位
 - flocking 群
 - formation control 编队控制
+- Metaheuristic 元启发式的
