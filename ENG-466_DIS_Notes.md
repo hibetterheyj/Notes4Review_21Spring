@@ -4,7 +4,7 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/4/29
+> Last updated on 2021/05/01
 
 # Lecture1-Lecture4
 
@@ -12,18 +12,95 @@
 
 # Lecture5-More on Localization Methods and an Introduction to Collective Movements
 
-:construction: To be updated!!!
+## 5.1 Robot localization with uncertainties
 
-#### Boids’ Flocking Rules
+### 5.1.1 fusion of proprioceptive and exteroceptive sensory 1D data for with Kalman filters
+
+### 5.1.2 non-deterministic uncertainties in wheel-based encoders
+
+### 5.1.3 multi-dimensional Kalman filters and localization in 2D
+
+
+
+## 5.2 Collective movements
+
+### 5.2.1 Form of collective movements in animal societies
+
+#### 5.2.1.1 Flocking in Animal Societies
+
+- Flocking in Natural Societies
+  - Human crowds
+  - Mammal herds
+  - Fish schools
+  - Insect swarms
+  - Bird flocks, formation fly
+- Features
+  - all media
+  - many animal families
+  - from small to big
+  - different ages and sizes
+  - happen in special circumstances (migration)
+
+#### 5.2.1.2 Flocking Phenomena
+
+- Rapid directed movement
+- Reactivity to predators, collision
+- No internal collision
+- Coalescing and splitting of flocks
+
+#### 5.2.1.3 Benefits of Flocking
+
+1. Energy saving
+
+   e.g., longer flight range of geese; fly faster for birds flock
+
+2. Navigation Accuracy
+
+   e.g., come back to the same spots
+
+### 5.2.2 Flocking in virtual agents: Reynolds’ Boids
+
+> Craig Reynolds’ Boids, 1987
+>
+> Flocks, herds and schools: A distributed behavioral model
+
+animating flocks with **Realistic looking**, **Computationally efficient**, and in **3D**
+
+#### 5.2.2.1 Boids’ Flight Model
+
+<img src="./pics/dis/w5_flight_rules.jpg" alt="w5_flight_rules" style="zoom:80%;" />
+
+3D model with 
+
+1. orientation, 
+2. momentum conservation (动量守恒), 
+3. maximal acceleration/speed, 
+4. gravity + aerodynamic lift,
+5. wings flapping independently.
+
+#### 5.2.2.2 Boids’ Flocking Rules
 
 1. **Separation**: **avoid collision** with nearby
 2. **Alignment**: attempt to **match velocity (speed and direction)**
    with nearby
 3. **Cohesion**: attempt to **stay close to** nearby
 
-![w5_flocking_rules](./pics/dis/w5_flocking_rules.png)
+<img src="./pics/dis/w5_flocking_rules.png" alt="w5_flocking_rules" style="zoom:50%;" />
 
-#### Boids’ Sensory System (ideal)
+#### 5.2.2.3 Arbitrating Rules
+
+- Boids’ controller is rule-based (or behavior-based)
+- ? **Time-constant linear weighted sum did not work** in front of obstacles
+- ? **Time-varying, nonlinear weighted sum worked much better**
+- **<u>Separation > alignment > cohesion</u> → splitting possible in front of an obstacle**
+
+#### 5.2.2.4 Boids’ ideal sensory system
+
+> Sensory System for Teammate Detection
+>
+> **distributed** and **local**
+
+<img src="./pics/dis/w5_sensory_system.jpg" alt="w5_sensory_system" style="zoom:50%;" />.2.4
 
 + **Local, almost omni-directional** sensory system
 + **Perfect relative range and bearing system**
@@ -31,6 +108,40 @@
 + **Homogeneous** system
 + **“Natural” nonlinearities**: negative exponential of
   the distance
+
+#### 5.2.2.5 Simulation solution for realistic scenarios
+
+- The three rules alone are not enough for realistic scenarios
+
+##### Case1: Moving from A to B -> migratory urge
+
+> to direct the flocks along particular courses
+
+- added a low priority acceleration request/migratory urge) towards a **point** or in a **direction**
+- moving the target point -> steer the flock around the environment
+- Discrete jumps in the position -> smooth changes of direction
+
+##### Case2: Dealing with Obstacles
+
+- Approach 1: **potential fields**
+  - Repulsive force field around the obstacle
+  - week3 lecture
+  - Poor results in Boids
+- Approach 2: **steer-to-avoid**
+  - Consider obstacles ONLY directly in the front
+  - Find the silhouette edge (轮廓) closest to the point of collision (Pc) and Aim the Boid one body length outside that edge
+  - Worked much better; also more natural
+
+##### Case3: What Happens if You Mess Around -> omitting alignment
+
+> alignment = velocity matching
+
+- Major differences between virtual and real agents in **communication**, **sensing**, **actuation**, and **control**:
+- Most of flocking with real robots **did not use the alignment rule also because sensing velocity of teammates is difficult**
+
+#### 5.2.2.6 More on Boids …
+
+Craig Reynolds’ web page on Boids: http://www.red3d.com/cwr/boids/
 
 # Lecture6-Collective Movements in Multi-Robot Systems
 

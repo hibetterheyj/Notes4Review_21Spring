@@ -6,7 +6,7 @@
 >
 > Last updated on 2021/4/29
 
-# UAS Hardware (week9)
+# Flapping-Wing (week9)
 
 # Drone Regulations (week9)
 
@@ -68,3 +68,57 @@
   > https://www.skyguide.ch/en/events-media-board/u-space-live-demonstration/
 
   airspace in block to avoid collision and report the location for further path calculation
+
+# UAS Hardware (week10)
+
+## Introduction
+
+> main component required
+
+1. The aerial vehicle
+   - Air frame
+   - Actuators for propulsion and control
+   - Energy source
+   - Autopilot
+     - Sensors for attitude estimation
+     - Electronics for regulation, control and communication
+     - Sensor and avoid system
+2. Payload
+   - Cameras
+   - Environmental sensors (wind, temperature, humidity)
+   - Robotic arms for manipulation
+3. Ground Control Station
+   - Communication systems
+   - Interface to monitor internal parameters and to send commands to the vehicle
+
+## Frame and materials
+
+### materials comparison
+
+| Material | Composite | ABS/PLA | Wood | Foam |
+| -------- | --------- | ------- | ---- | ---- |
+| Pros     |           |         |      |      |
+| Cons     |           |         |      |      |
+| Comment  |           |         |      |      |
+
+### metric when considering materials
+
+- Young's modulus [[wiki](https://en.wikipedia.org/wiki/Young%27s_modulus)]
+
+  弹性模量，正向应力与正向应变的比值
+
+- Specific modulus [[wiki](https://en.wikipedia.org/wiki/Specific_modulus)]
+
+  比模量，单位密度的弹性模量，劲度－质量比，在航天工业中有广泛应用。
+
+## Energy sources
+
+## Actuators for propulsion and maneuvering
+
+## Propellers
+
+## Sensors
+
+## Autopilots
+
+## Communication protocols
