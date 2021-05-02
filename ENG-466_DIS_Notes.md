@@ -4,7 +4,7 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/05/01
+> Last updated on 2021/05/02
 
 # Lecture1-Lecture4
 

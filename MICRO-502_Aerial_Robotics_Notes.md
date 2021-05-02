@@ -4,11 +4,352 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/4/29
+> Last updated on 2021/05/02
 
-# Flapping-Wing (week9)
+# :construction: Intro (week1)
 
-# Drone Regulations (week9)
+# :construction: Multicopters (week1)
+
+# :construction: Attitude representations (week2)
+
+# :construction: Control (week2&3)
+
+# :construction: State Estimation (week3&4)
+
+# :construction: Navigation Methods (week5)
+
+# :construction: Perception (week5)
+
+# :construction: Fixed-wing drones (week6)
+
+# Aerial Swarms (week7)
+
+## Intro
+
+- Drone light shows
+
+  **Centralized** = agents transmit individual position to ground computer and receive next location
+
+- Collective Motion in nature
+
+  **Decentralized** = agents rely on **local information and computation**
+
+## Reynolds flocking algorithm (Reynolds, 1987)
+
+- radius of communication or neighborhood R
+
+<img src="./pics/aerial/week7_swarm_reynolds.png" alt="week7_swarm_reynolds" style="zoom:50%;" />
+
+- **Separation**: avoid collision
+- **Cohesion**: attempt to keep close
+- **Alignment**: attempt to match velocity
+
+### Reynolds flocking: model
+
+<img src="./pics/aerial/week7_swarm_reynolds_model.png" alt="week7_swarm_reynolds_model" style="zoom:50%;" />
+
+- Equations
+
+  <img src="./pics/aerial/week9_swarm_reynolds_equ.png" alt="week9_swarm_reynolds_equ" style="zoom:50%;" />
+
+  - Set of agents in neighborhood $N$
+  - identity of $i$-th agent
+  - position ${\mathbf{p}_i}$
+  - velocity $\dot{\mathbf{p}}_i$
+  - acceleration $\ddot{\mathbf{p}}_i$ = control command
+  - acceleration term due to the cohesion/separation/alignment $\mathbf{a}_{coh,i}$, $\mathbf{a}_{sep,i}$, and $\mathbf{a}_{align,i}$
+  - constant gains corresponding to the cohesion/separation/alignment $C_c$,  $C_s$, and  $C_a$
+
+- Equilibrium
+
+   <img src="./pics/aerial/week7_swarm_reynolds_equilibrium.png" alt="week7_swarm_reynolds_equilibrium" style="zoom:50%;" />
+
+  - Positions **converge** to a <u>lattice formation</u> (晶格式)
+
+  - Velocities **converge** to the <u>average of initial velocities</u>
+
+    $\lim _{t \rightarrow \infty} \dot{\boldsymbol{p}}_{i}=\frac{\sum_{i \in\{1,2, \ldots N\}} \dot{\boldsymbol{p}}_{i}(0)}{N}$
+
+### Reynolds flocking with migration
+
+- new **migration rule** steers the swarm towards a desired direction
+
+  - **replaces** the **alignment rule**
+  - **cohesion and separation rules are kept** to regulate the agents distances
+
+  <img src="./pics/aerial/week7_swarm_reynolds_model_migration.png" alt="week7_swarm_reynolds_model_migration" style="zoom:50%;" />
+
+- Equation
+
+  $\ddot{\mathbf{p}}_{i}=\mathbf{u}_{i}$, $\mathbf{u}_{i}=c_{c} \frac{\sum_{j \in N_{i}}\left(\mathbf{p}_{j}-\mathbf{p}_{i}\right)}{\left|N_{i}\right|}-c_{s} \frac{\sum_{j \in N_{i}} \frac{\mathbf{p}_{j}-p_{i}}{\left\|p_{j}-p_{i}\right\|^{2}}}{\left|N_{i}\right|}+c_m \frac{\mathbf{v}_{mig}-\dot{\mathbf{p}}_i}{1}$
+
+  $\forall i \in\{1,2, \ldots, N\}$
+
+  - parameters
+    - migration velocity $\mathbf{v}_{mig}$
+    - Denominator = 1 since **neighbors are not relevant for migration**
+
+## Case: Aerial swarms for disaster mitigation
+
+<img src="./pics/aerial/week7_swarm_project_example.jpg" alt="week7_swarm_project_example" style="zoom:50%;" />
+
+SMAV platform with control electronics
+
+### Communication radius and turning angle
+
+- large communication radius -> can make sharp turn together because of knowing the position of other robots
+- smaller communication radius -> may separate and gather into a flocking often
+
+### Virtual agents for flocking with fixed-wing drones
+
+- Winged drone flies around Virtual Agent which moves according to Reynolds rules
+
+  <img src="./pics/aerial/week7_swarm_virtual.png" alt="week7_swarm_virtual" style="zoom:50%;" />
+
+- Varga et al., Distributed Formation Control of Fixed Wing Micro Aerial Vehicles for Uniform Area Coverage, IROS 2015
+
+  video: <https://youtu.be/FYsd2VckGA0>
+
+## Reynolds flocking with obstacles (Virtual agents)
+
+- Obstacles are modelled as **virtual agents**
+
+  - Its **position** is the obstacle’s **closest point** to the agent
+  - Its **velocity** is **perpendicular to the tangent** to the obstacle
+
+  $(\mathbf{p}_k, \dot{\mathbf{p}}_k)$ position and velocity of the virtual agent
+
+- Virtual agents exert **separation** and **alignment** effects, but not **cohesion** (not collide with the agent)
+
+<img src="./pics/aerial/week7_swarm_reynolds_obs.png" alt="week7_swarm_reynolds_obs" style="zoom:40%;" />
+
+- Visualization
+
+  <img src="./pics/aerial/week7_swarm_reynolds_obs_viz.png" alt="week7_swarm_reynolds_obs_viz" style="zoom:50%;" />
+
+- Equation (two extra separation and alignment term regarding obstacles)
+
+  $\ddot{\mathbf{p}}_{i}=\mathbf{u}_{i}$
+
+  $\mathbf{u}_{i}=c_{c} \frac{\sum_{j \in N_{i}}\left(\mathbf{p}_{j}-\mathbf{p}_{i}\right)}{\left|N_{i}\right|}-c_{s} \frac{\sum_{j \in N_{i}} \frac{\mathbf{p}_{j}-p_{i}}{\left\|p_{j}-p_{i}\right\|^{2}}}{\left|N_{i}\right|}+c_a \frac{\mathbf{v}_{mig}-\dot{\mathbf{p}}_i}{1} -\left[c_s \frac{\mathbf{p}_k - \mathbf{p}_i}{\Vert \mathbf{p}_k - \mathbf{p}_i \Vert^2} + c_a (\dot{\mathbf{p}}_k - \dot{\mathbf{p}}_i)\right]$
+
+  $\forall i \in\{1,2, \ldots, N\}$
+
+## Other models
+
+### Vicsek model: particles in confined environments (密闭环境)
+
+> Vasarhelyi et al., Optimized flocking of autonomous drones in confined environments, Science Robotics, 2019
+>
+> DOI: <http://doi.org/10.1126/scirobotics.aat3536>
+>
+> Video: https://youtu.be/E4XpyG4eMKE
+>
+> Project web: http://hal.elte.hu/drones/scirob2018.html
+
+- Rules
+  - **Separation**
+  - **Self propulsion**: Makes the agent match a preferred speed
+  - **Friction**: **Viscosity** (internal friction) for alignment and oscillation **damping**
+
+- Equation
+
+  $\left\{\begin{array}{l}\dot{\boldsymbol{p}}_{i}=\boldsymbol{u}_{i} \\ \boldsymbol{u}_{i}=\boldsymbol{v}_{s e p, i}+\boldsymbol{v}_{s p p, i}+\boldsymbol{v}_{\text {fric }, i}\end{array}\right.$
+
+- The full equation contains 12 parameters and **requires heuristic methods for optimization**
+
+### Olfati-Saber model
+
+> R. Olfati-Saber, Flocking for multi-agent dynamic systems: algorithms and theory, IEEE Transactions
+> on Automatic Control, 2006
+
+<img src="./pics/aerial/week7_swarm_olfati_model.png" alt="week7_swarm_olfati_model" style="zoom:40%;" />
+
++ Rules
+
+  + Distance matching
+    + Makes the agents **match a desired inter-agent distance**
+    + **Replaces cohesion and separation** rules of Reynolds model
+    + Mathematically defined as a potential function
+  + Alignment: attempt to match the velocity and direction
+
+  <img src="./pics/aerial/week7_swarm_olfati_model_viz.png" alt="week7_swarm_olfati_model_viz" style="zoom:50%;" />
+
++ Equation
+
+  $\ddot{\mathbf{p}}_{i}=\mathbf{u}_{i}$
+
+  $\mathbf{u}_{i}=c_{d} \frac{\sum_{j \in N_{i}} \nabla \left(\rho(\mathbf{p}_{j}-\mathbf{p}_{i}) V (\Vert \mathbf{p}_{j}-\mathbf{p}_{i}\Vert) \right)}{\left|N_{i}\right|}-c_{a} \frac{\sum_{j \in N_{i}} (\dot{\mathbf{p}}_{j}-\dot{\mathbf{p}}_{i})}{\left|N_{i}\right|}$
+
+  $\forall i \in\{1,2, \ldots, N\}$
+
+  + radius of influence $R$
+  + desired inter-agent distance $d_{ref}$
+  + weighting function $\rho$
+  + distance matching function $V$
+  + gradient, derivative in three dimensions $\nabla=\left(\frac{\partial}{\partial x}, \frac{\partial}{\partial y}, \frac{\partial}{\partial z}\right)$
+
++ **distance matching example**
+
+  + Components
+    + **weighting** function 越近影响越大
+    + **distance matching** function 越靠近$d_{ref}$越小，线性
+    + Result: **potential function**
+
+  <img src="./pics/aerial/week7_swarm_olfati_model_dist_mat.png" alt="week7_swarm_olfati_model_dist_mat" style="zoom:50%;" />
+
+  + Note
+    + Principle of minimum potential: **minimum** defines the stable equilibrium of the system
+    + $d_{ref}$ is a stable equilibrium
+    + The force acting on an agent is zero in the minimum of the potential. For $d=d_{ref}$, it holds $\nabla(\rho V)=\mathbf{0}$
+
+## Drone Swarms
+
+> Coppola et al., A Survey on Swarming With Micro Air Vehicles: Fundamental Challenges and Constraints, Front. Robot. AI, ‘20
+
+<img src="./pics/aerial/week7_swarm_survey.jpg" alt="week7_swarm_survey" style="zoom:50%;" />
+
+The combination of centralized planning/control with external positioning has **allowed to fly significantly larger swarms**. The **numbers are lower** for the **works featuring decentralized control with external positioning**, or centralized control with local sensing
+
+**Three categories**
+
+1. Centralized with external positioning
+
+   > latest: September 20 2020
+   >
+   > 3,051 drones
+   >
+   > News: https://www.guinnessworldrecords.com/news/2020/10/3051-drones-create-spectacular-record-breaking-light-show-in-china (Company: https://www.dmduav.com/)
+   >
+   > YouTube: https://youtu.be/44KvHwRHb3A
+   >
+   > Bilibili: https://www.bilibili.com/video/BV1jt4y1q762
+
+2. Decentralized with external positioning or centralized with on-board sensing
+
+   Vasarhelyi et al. (2019)
+
+3. Decentralized with on-board sensing
+
+   Saska et al. (2017)
+
+## Visual information in flocking
+
+### Soria2019IRC-influence of limited visual sensing using Reynolds
+
+> Soria et al., The influence of limited visual sensing on the Reynolds ﬂocking algorithm, 2019
+
+- generate flocks with different fields of view
+
+  <img src="./pics/aerial/week7_swarm_limited_vision.jpg" alt="week7_swarm_limited_vision" style="zoom:20%;" />
+
+  - azimuth/方位角 $\theta [^{\circ}]$
+  - width $\alpha [^{\circ}]$
+
+  <img src="./pics/aerial/week7_swarm_limited_vision_tests.jpg" alt="week7_swarm_limited_vision_tests" style="zoom:40%;" />
+
+- measure flocking performance (all individuals in the flock have the same visual configuration)
+
+  - **Order**: measure of alignment
+  - **Safety**: ability to avoid collisions
+  - **Union**: ability to stay informed on neighbors
+  - **Connectivity**: ability to broadcast messages among drones
+
+  <img src="./pics/aerial/week7_swarm_limited_vision_metrics.jpg" alt="week7_swarm_limited_vision_metrics" style="zoom:50%;" />
+
+- results
+
+  <img src="./pics/aerial/week7_swarm_limited_vision_results.png" alt="week7_swarm_limited_vision_results" style="zoom:80%;" />
+
+  - focus on order and safety (alignment and collision prevention capability)
+  - largest azimuth and FoV has best performance
+  - increase in either azimuth or FoV only will degrade the performance
+  - safety can be achieved even with lower FoV
+
+### Schilling2019RAL-Learning to flock in simulation with vision
+
+> Schilling et al., Learning Vision-Based Flight in Drone Swarms by Imitation, RAL2019
+
+- use 6 cameras in each side
+
+- training on a dataset to generate the velocity vector for the drone
+
+<img src="./pics/aerial/week7_swarm_vision_Schilling19RAL.png" alt="week7_swarm_vision_Schilling19RAL" style="zoom:50%;" />
+
+- Stages
+  - Dataset generation: Flocking algorithm as ground truth
+  - Training phase: Learn **mapping between vision and control output**
+  - Vision-based control: **Neural controller for collision-free and cohesive flight**
+- Note
+  - work well in simulation indoor environment
+  - it can be robust when individuals has different migration points
+  - cannot generalize well in background clutter and different lighting condition
+
+### Schilling2021RAL-Learning to flock outdoor with vision
+
+> Schilling et al., Vision-Based Drone Flocking in Outdoor Environments, RAL2021 
+
+<img src="./pics/aerial/week7_swarm_vision_Schilling2021RAL.png" alt="week7_swarm_vision_Schilling2021RAL" style="zoom:50%;" />
+
+- Setup
+
+  - Drone with only with 4 cameras in four side
+  - RTK GNSS is used to compute performance
+  - train YOLOv3 tiny to recognize other drones using YOLO
+
+- Control method
+
+  <img src="./pics/aerial/week7_swarm_vision_Schilling2021RAL_control.png" alt="week7_swarm_vision_Schilling2021RAL_control" style="zoom:50%;" />
+
+  1. Real-time drone detection
+
+     - Input: images from 4 cameras
+
+     - Output: x,y coordinates of perceived drones in image frame coordinates
+
+       known size to compute corresponding distance
+
+  2. Multi-agent state tracking
+
+     - Input: Locations of drones & noise models
+
+     - Output: **Range and bearing** of all perceived drones with **noise**
+
+  3. Potential-field-based control
+
+     - Input: Range and bearing of all perceived drones
+     - Output: **velocity vector** resulting from Reynolds algorithm
+
+## Check points
+
+- What information does each agent receive in the Reynolds flocking algorithm?
+
+  :construction: position and velocity of self and neighbor agents
+
+- How are obstacles modeled in Reynold’s flocking
+
+  visual agent; integrate into equations with alignment and separation term
+
+- How is a migration point incorporated in flocking algorithms
+
+  :construction: add a velocity term?
+
+- What does the Olfati-Saber algorithm ensure?
+
+  distance matching with potent ion function
+
+- What are the three steps of vision-based drone flocking algorithm?
+
+  1. Real-time drone detection
+
+  2. Multi-agent state tracking
+  3. Potential-field-based control
+
+  images from 4 cameras -> x,y coordinates of perceived drones in images -> Range and bearing of all perceived drones -> velocity vector
+
+# :construction: Flapping-Wing (week8)
+
+# Drone Regulations (week8)
 
 > Author: Markus Farner
 >
@@ -69,7 +410,7 @@
 
   airspace in block to avoid collision and report the location for further path calculation
 
-# UAS Hardware (week10)
+# :construction: UAS Hardware (week9)
 
 ## Introduction
 
