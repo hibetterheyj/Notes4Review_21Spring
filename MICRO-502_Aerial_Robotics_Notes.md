@@ -410,7 +410,7 @@ The combination of centralized planning/control with external positioning has **
 
   airspace in block to avoid collision and report the location for further path calculation
 
-# :construction: UAS Hardware (week9)
+# UAS Hardware (week9)
 
 ## Introduction
 
@@ -436,11 +436,11 @@ The combination of centralized planning/control with external positioning has **
 
 ### materials comparison
 
-| Material | Composite | ABS/PLA | Wood | Foam |
-| -------- | --------- | ------- | ---- | ---- |
-| Pros     |           |         |      |      |
-| Cons     |           |         |      |      |
-| Comment  |           |         |      |      |
+| Material | Composite                         | ABS/PLA                                                 | Wood                  | Foam                                          |
+| -------- | --------------------------------- | ------------------------------------------------------- | --------------------- | --------------------------------------------- |
+| Pros     | Stiff, lightweight                | Easy to manufacture by 3D printing or injection molding | Lightweight and cheap | Lightweight and soft, resistance to collision |
+| Cons     | Expensive, complex to manufacture | Heavier, less stiff                                     | complex to work with  | limited load                                  |
+| Comment  | -                                 | useful for prototyping                                  | -                     | absorb energy, less prone to damage           |
 
 ### metric when considering materials
 
@@ -448,13 +448,170 @@ The combination of centralized planning/control with external positioning has **
 
   弹性模量，正向应力与正向应变的比值
 
+  - measure of **stiffness**
+  - defines the relationship between stress and strain
+  - Foam < ABS/PLA/Wood < Carbon fiber
+
+  <img src="./pics\/aerial/week9_UAS_Hardware_Young_modulus.png" alt="week9_UAS_Hardware_Young_modulus" style="zoom:80%;" />
+
 - Specific modulus [[wiki](https://en.wikipedia.org/wiki/Specific_modulus)]
 
   比模量，单位密度的弹性模量，劲度－质量比，在航天工业中有广泛应用。
+  
+  - elastic modulus per mass density of a material
+  - stiffness to weight ratio
+  - **High specific modulus materials** find wide application in UAVs where **minimum structural weight** is required.
+  
+  <img src="./pics/aerial/week9_UAS_Hardware_specific_modulus.jpg" alt="week9_UAS_Hardware_specific_modulus" style="zoom:80%;" />
 
 ## Energy sources
 
-## Actuators for propulsion and maneuvering
+> Goal: power the robots to fly
+>
+> Metric: energy density, power density, charging time and so on
+
+### Category
+
+- Nickel-Cadmium (NiCd) | 镍镉
+
+  - Mature and cheap
+  - Low energy and power density -> short flight time
+
+- Nickel-Metal Hydrate (NiMh) | **镍氢电池**
+
+  > 由[镍镉电池](https://zh.wikipedia.org/wiki/鎳鎘電池)（NiCd battery）改良而来的，其以能吸收氢的金属代替[镉](https://zh.wikipedia.org/wiki/镉)（Cd）。它以相同的价格提供比镍镉电池更高的电容量、较不明显的[记忆效应](https://zh.wikipedia.org/wiki/記憶效應_(電池))、以及较低的环境污染（不含有毒的镉）
+  >
+  > [[wiki-zh](https://zh.wikipedia.org/wiki/%E9%95%8D%E6%B0%A2%E7%94%B5%E6%B1%A0)]
+
+  - Higher energy density than NiCd
+
+- Lithium-Polymer (Li-Po) | 锂离子聚合物电池
+
+  - rapidly growing market and performance
+  - Higher energy and power density compared to NiCd
+  - Regular geometry for easy integration, e.g., cuboid or cuboid
+
+- Fuel
+
+  - **Highest energy and power density**
+  - **complex and higher weight**-requires tank, distribution system and maintenance
+
+- Fuel cell
+
+  - Electrochemical reaction of hydrogen fuel with oxygen
+
+### Energy and power density
+
+- energy density
+
+  amount of energy stored per unit volume or mass
+
+- power density
+
+  > how fast or quickly to discharge into mechanics
+
+  amount of power (time rate of energy) per unit volume or mass
+
+- Conclusion
+
+  - Fuel has **highest energy and power density**
+  - Fuel cell has highest energy but lower power density
+  - LiB has higher energy and power density than NiMH and NiCd
+
+<img src="./pics/aerial/week9_UAS_Hardware_energy_density.jpg" alt="week9_UAS_Hardware_energy_density" style="zoom:80%;" />
+
+### Li-Po batteries
+
+<img src="./pics/aerial/week9_UAS_Hardware_LiPo_battery.jpg" alt="week9_UAS_Hardware_LiPo_battery" style="zoom:80%;" />
+
+- most commonly-used UAV energy source
+
+- Each **battery** composed of one or more **cells** connected in series
+
+  S=series, P=Parallel
+
+- Each cell has
+
+  - nominal voltage of 3.7 V
+
+  - a maximum voltage of 4.2 V
+
+  - a capacity (mAh)
+
+    e.g., 1000 mAh
+
+  - a specific discharge and charge rate (C)
+
+    e.g., Discharge rate with 25-50C = 25-50 A of max continuous discharge current; Charge rate 2C = 2 A
+
+#### Discharge Curves of Li-Po battery
+
+<img src="./pics/aerial/week9_UAS_Hardware_discharge_curve.jpg" alt="week9_UAS_Hardware_discharge_curve" style="zoom:80%;" />
+
+- not linear of time
+- the discharge curve is determined by **the amount of current (expressed in “C”)** drawn from the battery.
+- higher discharge rates -> faster rising temperature -> poses overheating risks.
+
+> **Book**: G. C. H. E. Decroon, M. Perçin, B. D. W. Remes, R. Ruijsink, and C. De Wagter, The delfly: Design, aerodynamics, and artificial intelligence of a flapping wing robot. 2015.
+
+#### Energy Curve of Li-Po battery
+
+<img src="./pics/aerial/week9_UAS_Hardware_energy_curve.jpg" alt="week9_UAS_Hardware_energy_curve" style="zoom:100%;" />
+
+- How much energy the same LiPo battery can provide until its voltage drops below a certain voltage
+
+- 10 times higher battery load (discharge rate) -> 17 times shorter flight time
+
+  nonlinear relationship
+
+## Actuators
+
+### Actuators for propulsion
+
+|          | **Electric motors**                                          | Combustion engine                                            | Hybrid$^2$                                      |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ----------------------------------------------- |
+| **Pros** | clean and quite; Reliable and easy to maintain; Fast to change operational state (accelerate and decelerate) | High weight to power ratio using fuel                        | Long endurance; Suited for fast change of speed |
+| **Cons** | Limited weight to power ratio due to battery                 | Vibration, dirt, and noise; Requires tuning; Not suited for fast change of speed$^1$ | Complex and expensive                           |
+
+1. Combustion engine is not suited for fast change of speed (problem in controlling quadcopters)
+
+2. Hybrid systems (fuel generator coupled with electric motor)
+
+   e.g. [skyfront](https://skyfront.com/product-list) drone with 4.5 hour endurance (demonstrated) and 3 kg payload capacity
+
+#### Electric motor example-Brushless DC electric motors
+
+<img src="./pics/aerial/week9_UAS_Hardware_brushless_motor.png" alt="week9_UAS_Hardware_brushless_motor" style="zoom:80%;" />
+
+- Brushless: no electrical physical connection
+- Pros
+  - High efficiency and high torque/power density
+  - High speed range
+  - Large range of thrust (from $10^{-2}$ to $10^{2}$ N)
+- Cons
+  - manufacturing complexity -> expensive
+  - Control is complex and expensive requiring and **electronic speed controller (ESC, 电控)**
+- Main motor data
+  - 3 primary data: 
+    - Size
+    - **Nominal** voltage (number of battery cells, e.g., 3S)
+    - Speed constant KV (No load rpm/Volt)
+      - High KV -> high speed and low torque
+      - Low KV -> low speed and high torque
+
+
+
+### Actuators for control/maneuvering
+
+#### Servomotors
+
+> need to deflect the control surfaces
+
+- rotary or linear actuators
+
+<img src="./pics/aerial/week9_UAS_Hardware_servomotor.png" alt="week9_UAS_Hardware_servomotor" style="zoom:80%;" />
+
+- 3 wires (B-Ground, R-Voltage, Y-Signal) - send power and signal
 
 ## Propellers
 
