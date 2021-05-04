@@ -4,7 +4,7 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/05/02
+> Last updated on 2021/05/04
 
 # :construction: Intro (week1)
 
@@ -50,7 +50,7 @@
 
 - Equations
 
-  <img src="./pics/aerial/week9_swarm_reynolds_equ.png" alt="week9_swarm_reynolds_equ" style="zoom:50%;" />
+  <img src="./pics/aerial/week7_swarm_reynolds_equ.png" alt="week9_swarm_reynolds_equ" style="zoom:50%;" />
 
   - Set of agents in neighborhood $N$
   - identity of $i$-th agent
@@ -611,11 +611,198 @@ The combination of centralized planning/control with external positioning has **
 
 <img src="./pics/aerial/week9_UAS_Hardware_servomotor.png" alt="week9_UAS_Hardware_servomotor" style="zoom:80%;" />
 
-- 3 wires (B-Ground, R-Voltage, Y-Signal) - send power and signal
+- 3 wires (B-Ground, R-Voltage, Y-Signal) - send power and signal to control circuit
+
+- brush motor in small scale and connected to gear drive (set correct speed and torque, connect to potentiometer)
+
+  potentiometer (电位器) sensor for angular position control
+
+#### Examples of Servomotors
+
+| <u>Rotary servos</u> with push rod                           | Linear servos                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="./pics/aerial/week9_UAS_Hardware_rotary_servo.png" alt="week9_UAS_Hardware_rotary_servo" style="zoom:75%;" /> | <img src="./pics/aerial/week9_UAS_Hardware_linear_servo.png" alt="week9_UAS_Hardware_linear_servo" style="zoom:80%;" /> |
+| Weight: 1 to 500 g                                           | Weight: 1 to 5 g                                             |
+| -                                                            | to control elevators, flaps and ailerons                     |
 
 ## Propellers
 
+> to convert power (delivered by a rotating shaft) into thrust
+
+### Characteristics
+
+- Diameter
+  - the length of prop from tip to tip
+  - larger diameter are more efficient
+- Pitch
+  - the angle of attack in the propellers
+  - higher at the root (center) and lower at the tip
+- Number of blades
+  - majority of propellers used in UAVs have two blades because of efficiency
+  - 3 or 4 blades are more compact for a given thrust
+
+### Pitch and efficiency at different cruise speed
+
+- the blade pitch could be varied in flight  
+
+- propeller advance ratio $J$ VS Propeller efficiency $\eta_p$
+
+  $J= V/nD$, **flight** speed $V$, **angular** speed $n$, and Diameter D -> tip speed
+
+  choose the suitable propeller according to the **diameter and pitch** to achieve better **efficiency curve**
+
+  <img src="./pics/aerial/week9_UAS_Hardware_pitch_efficiency.png" alt="week9_UAS_Hardware_pitch_efficiency" style="zoom:80%;" />
+
+- **Variable pitch propeller with servo** -> achieve best efficiency all the time
+
+  <img src="./pics/aerial/week9_UAS_Hardware_variable_propeller.png" alt="week9_UAS_Hardware_variable_propeller" style="zoom:60%;" />
+
+### Choose the right combination actuator and propeller
+
+> match the propeller and the motor to maximize propulsive efficiency
+
+- modelling (http://web.mit.edu/drela/Public/web/qprop/motorprop.pdf)
+- calculation software (http://ecalc.ch/)
+- testing
+
 ## Sensors
+
+- Proprioceptive sensors: measure the internal state of the UAV, mainly for control
+  - IMU: accelerometer, gyroscope and magnetometer
+  - Pressure / altitude sensors
+  - GPS
+  - Velocity (Airspeed sensors)
+  - Power sensor
+- Exteroceptive sensors: provide information about the UAS environment and are usually carried as a payload
+  - Camera and sonar for obstacle detection and avoidance
+  - Environmental sensors
+  - Camera for video streaming, thermal or hyperspectral imaging
+
+### Gyroscopes
+
+> measure changes in vehicle orientation
+
+- Type: Mechanical; Optical; Micro-electromechanical systems (MEMS)
+
+- Categories
+
+  - Orientation -> directly measure angles (very rare in robotics!)
+  - Rate gyros -> measure rotation velocity, which can be integrated
+
+- Cons
+
+  - all gyroscopes are prone to drift unless the error is corrected through reference to some alternate measurement
+
+    (not relative to absolute reference but past state)
+
+  - the drift will eventually exceed the required accuracy
+
+- MEMS rate gyros
+
+  <img src="./pics/aerial/week9_UAS_Hardware_mems_gyros.png" alt="week9_UAS_Hardware_mems_gyros" style="zoom:60%;" />
+
+  - vibrating mechanical elements to sense **Coriolis acceleration** (振动机械元件以感应科里奥利加速度)
+
+    induce an vibration outside the plane and measure the out-of-plane motion
+
+  - Pros -> replacing mechanical and optical gyros
+
+    - have no rotating parts
+    - have low-power consumption requirements
+    - small
+
+### Accelerometers
+
+> measure acceleration to get the inertial information
+
+- behaves as a damped mass on a spring
+- MEMS use cantilever beams (悬臂梁) and a proof mass.
+- The way of measuring the beam deflection is often capacitive or piezoresistive (电容性或压阻性的)
+- have three axes => inclinometers (inclinometers)
+
+<img src="./pics/aerial/week9_UAS_Hardware_accelerometers.png" alt="week9_UAS_Hardware_accelerometers" style="zoom:60%;" />
+
+### Magnetometers
+
+> Exteroceptive
+
+- electronically compass 电子罗盘
+
+- direct measure of the magnetic field
+
+  - Hall-effect (霍尔效应)
+
+  - Flux Gate (磁通罗盘) [[wiki](https://en.wikipedia.org/wiki/Magnetometer#Fluxgate_magnetometer)]
+
+    two perpendicular circuits to get the force
+
+- Pros
+
+  - weakness of the Earth magnetic field
+
+  - easily disturbed by magnetic objects or other sources
+
+  - not working in indoor environments
+
+    because of wires or other electronic device
+
+### Pressure / Altitude sensors
+
+> to measure the altitude according the atmosphere pressure
+
+- measure the changing distance of the deforming membranes: piezoresistive (压阻式), capacitive, optical, electromagnetic, etc
+
+  <img src="./pics/aerial/week9_UAS_Hardware_pressure_sensor.jpg" alt="week9_UAS_Hardware_pressure_sensor" style="zoom:60%;" />
+
+- has a vacuum inside the housing to get an absolute pressure 
+
+### Airspeed sensors
+
+- measured using a pitot tube (皮托管)
+
+- directed into the direction of motion
+
+- the difference between the stagnation pressure (**static** + **dynamic** pressure) -> the airspeed
+
+  <img src="./pics/aerial/week9_UAS_Hardware_airspeed_sensor.png" alt="week9_UAS_Hardware_airspeed_sensor" style="zoom:80%;" />
+
+- measures the **speed** of a UAV with **respect to the air** (airspeed) -> used for fixed-wing UAV
+
+  not the absolute speed of the UAV
+
+  <img src="./pics/aerial/week9_UAS_Hardware_airspeed_sensor_example.png" alt="week9_UAS_Hardware_airspeed_sensor_example" style="zoom:40%;" />
+
+### Global positioning system (GPS)
+
+- Global Navigation Satellite System (GNSS): This term includes 
+
+  - e.g. the GPS, GLONASS, Galileo, Beidou and other regional systems. 
+  - The advantage to having access to multiple satellites is accuracy, redundancy and availability at all times.
+
+- Relatively lower accuarcy: have a position accuracy within 20 m in the horizontal plane and 45 m in the vertical plane
+
+- **enhancement techniques**
+
+  - **WAAS** or other ground-based services: static
+
+    get close to 1-2 m accuracy
+
+  - **Real time Kinematic (RTK)** positioning: Base
+    Station receiver and a receiver on the vehicle
+
+    close to 1 cm accuracy
+
+### Power sensors
+
+- used to measure the battery voltage/current -> trigger safety procedures (return to home on low battery.)
+
+### Optic flow cameras
+
+- used to improve **state estimation** for accurate positioning and **height estimation** also in **GPS denied environments**
+- measure the movements along x, y and z direction  by tracking the features
+- used for obstacle avoidance, position holding, and precise landing
+
+<img src="./pics/aerial/week9_UAS_Hardware_optical_camera.png" alt="week9_UAS_Hardware_optical_camera" style="zoom:40%;" />
 
 ## Autopilots
 
