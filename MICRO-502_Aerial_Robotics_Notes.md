@@ -807,3 +807,253 @@ The combination of centralized planning/control with external positioning has **
 ## Autopilots
 
 ## Communication protocols
+
+
+
+# Insect-inspired vision (week10)
+
+- Inserts rely on vision for several flight behaviors
+
+- attitude stabilization; collision avoidance; altitude regulation ..
+
+## Optical flow
+
+<img src="./pics/aerial/week10_optical_flow.png" alt="week10_optical_flow" style="zoom:33%;" />
+
+$\mathbf{p}(\Psi, \Theta)=\left[-\frac{\mathbf{T}-(\mathbf{T} \cdot \mathbf{d}(\Psi, \Theta)) \mathbf{d}(\Psi, \Theta)}{D(\Psi, \Theta)}\right]+[-\mathbf{R} \times \mathbf{d}(\Psi, \Theta)]$
+
+- $ \Psi $ azimuth方位角；$\Theta$ elevation 升角
+- T/R Translation/Rotation vector
+- d/D viewing direction/distance to object
+- p result optical flow (tangential to viewing direction)
+
+<img src="./pics/aerial/week10_optical_flow_component.png" alt="week10_optical_flow_component" style="zoom: 50%;" />
+
+- translation + rotation component of the optical flow
+
+### For pure translational motion
+
+$p(\Psi)=\frac{\|\mathbf{T}\|}{D(\Psi)} \sin \Psi$, where $p=\|\mathbf{p}\|$
+$D(\Psi)=\frac{\|\mathbf{T}\|}{p(\Psi)} \sin \Psi$
+
+- motion parallax, OF is
+  1. directly proportional to the forward speed T
+  2. Inversely proportional to Distance D
+
+- Experiments1
+  1. landing: the flying speed of bees is decreasing as the height decreases
+  2. crossing speed: the flying speed of bees is decreasing as the corridors narrow (distance)
+- Experiments2
+  1. both vertical stripes: try to balance the OF magnitude in both sides to fly in the center
+  2. horizontal vs vertical stripe: low optical filter on the horizontal side because of it it in the same direction as bird moves while more OF near the vertical side (fly to H side to balance)
+
+## Sensors used for flight control
+
+1. Compound eyes: a large set of eyes to detect in different directions, no color capability -> used to detect optical flow
+   - small viewing angle
+   - several small eyes
+2. Ocelli: a small set of eyes are sensitive to luminosity to detect contrast; on the head and point upward -> used for stabilization, orientation, and attitude
+3. Halteres (like accelerators) -> used to measure rotational speed and stabilize than visual information
+
+### Architecture of insect eyes and brains
+
+Optic flow is detected by neurons in the lamina (椎板), whose response is aggregated and transformed by neurons in the medulla (髓质) and in the lobula plata (小叶平台) of brain regions
+
+### Elementary Motion Detector 初级运动检测器
+
+- Correlation between two adjacent, time-delayed contrast detectors | 两个相邻的延时对比检测器（小眼）之间的相关性
+
+  - photo receptor -> temporal delay -> correlation -> subtraction- 
+
+  - the speed of motion can 
+  - be detected as the peak the motion
+  - **not** a **reliable** velocity estimator -> depends on temporal and
+    <u>spatial frequency</u> -> cannot measure velocity objectively
+
+### Experiment - Optomotor Response 视运动反应
+
+torque response is not related to optical flow speed
+
+### Wide-field, motion-specific neurons
+
+- specialized **neurons** that integrate EMD signals from **different regions** and
+  respond only to **specific OF patterns**. 有些特定的神经元只对特定区域特定方向的光流起作用
+
+## Optic Flow Computation
+
+### Gradient Descent Methods
+
+$\frac{d I(n, m, t)}{d t}=0$
+
+- assumption: brightness I d**oes not change across the image** (n,m) as the agent moves **over time t**
+- Handcrafted Example: **Lucas-Kanade method**
+  1. image smoothing (low-pass filter)
+  2. Compute spatiotemporal derivative
+  3. Integration of derivatives to produce optic flow vector
+
+- often **iterative** and **requires significant computing power**
+
+### Image Interpolation Algorithm –I2A
+
+> computed as the image shift s that generates the smallest error between artificially shifted versions of the image at time t and the image at time t + Δt
+
+# Adaptive Morphology in Flying Animals and Drones (week10)
+
+
+
+# Agile Flight (week11)
+
+- topics: Perception, Learning, and Control
+
+- Why agile? flying robots to search & rescue 
+
+> **Pfeiffer, Scaramuzza (2021) Human-piloted drone racing: Perception and control, RAL’21. PDF. Dataset.**
+
+- Humans focus visual attention on **future waypoints**: receding planning horizon
+- 220 ms **perception-control latency** → humans **can definitely be beat** by a machine in a speed race
+
+- try to plot literature in different axis (External sensors & agile)
+- Research challenges & Opportunities
+  - Autonomous drone racing
+  - Drone acrobatics
+  - Low-latency sensing
+
+### Autonomous drone racing
+
+> **P. Foehn et al., AlphaPilot: Autonomous Drone Racing, RSS 2020, Best System Paper Award. PDF YouTube**
+
+- pass a sequence of gates as soon as possible
+  - time-optimized trajectory
+  - execute the trajectory while being robust to disturbances
+
+> [1] Foehn, Scaramuzza, CPC: Complementary Progress Constraints for Time-Optimal Quadrotor Trajectories, arXiv preprint, 2020. PDF. Video.
+
+- tight coupling of perception and action necessary?
+- plan **perception-aware** planning and control
+
+> Falanga, Foehn, Peng, Scaramuzza, PAMPC: Perception-Aware Model Predictive Cotrol, IROS18. PDF. Video. Open Source: https://github.com/uzh-rpg/rpg_quadrotor_mpc
+
+- action objectives + perception objectives => optimization problem
+  - perception: maximize visibility of POI (minimize the deviation) + minimize the blur (minimize rotation speed)
+
+> Kaufmann et al., Beauty and the Beast: Optimal Methods Meet Learning for Drone Racing, ICRA’19. PDF. Video Deployed to win the IROS Autonomous Drone Racing Competition, 2018. Video.
+
+- NN to detect the gate (robust to motion blur and illumination variation)
+
+  > Loquercio, et al., Deep Drone Racing: From Simulation to Reality with Domain Randomization
+
+  - predict gate pose and covariance
+
+  - trained in simulation only
+
+  - sim-to-real world transfer via domain randomization!!!
+
+    can be used to drone approach
+
+  - gazebo simulator was used
+
+- **ACADO** (http://acado.github.io/). ACADO's C++ interface is used to describe the quadrotor model and parameters for transcription into a quadratic program, which is then solved with qpOASES (https://projects.coin-or.org/qpOASES).
+
+### Drone acrobatics
+
+> Kaufmann*, Loquercio*, Ranftl, Mueller, Koltun, Scaramuzza, Deep Drone Acrobatics, RSS 2020. PDF. Video.Code Best Paper Award Honorable Mention
+
+- traditional drone control architecture
+
+  Image/IMU -> State estimation (VIO) -> Planning -> Control -> Collective thrust/Bodyrates -> Low-level controllers
+
+- End-to-end sensorymotor control (in a concurrent design fashion)
+
+  Image/IMU -> NN -> Collective thrust/Bodyrates
+
+  - Zero-shot Sim2Real Transfer
+
+  - related literature
+
+    > Does computer vision matter for acion? Science Robotics
+
+    Controller experiments indicate that explicit intermediate representations help action
+
+  - use **Feature tracks** into the NN tracking
+
+  - Simulation results: lower tracking errors and 0 errors in acrobatics
+
+  - Cons: does not generalize to different tasks
+
+<img src="./pics/aerial/week11_tradition_learning_navigationpng.png" alt="week11_tradition_learning_navigationpng" style="zoom:40%;" />
+
+### Low-latency sensing
+
+- event cameras do not suffer from latency/motion blur or illumination variation.
+- Application
+  - VIO in high-speed and HDR environment
+  - Dynamic Obstacle Avoidance
+
+# Learning of flight controllers (week11)
+
+- tightly coupled vision and control
+
+### challenge1: Architecture/Input and Output representation
+
+- processing **asynchronous** data (different frequencies): sampler of IMU info and trajectory, feature tracks -> temporal convolutions -> multilayer perceptron
+
+### challenge2: Data collection
+
+1. imitate and use data from cars and bicycles
+   - already integrated into city environments
+   - large publicly available datasets
+   - no need for an expert drone pilot
+
+> DroNet: Learning to Fly by Driving, Loquercio et al., Robotics and Automation Letters 2018, PDF, Video, Code.
+
+- fair performance outdoors; Generalization in Indoor corridors and parking lots
+- Analysis on the DroNet -> Line-like feature are a strong cue of direction; Cannot work in forest-like environment/water (state estimation)
+
+2. Simulation to Reality Transfer -> Sim2Real: Domain Randomization for Drone Racing
+
+   > Deep Drone Racing with Domain Randomization
+   >
+   > Loquercio et al., Agile Autonomy: Learning High-Speed Flight in the Wild, Under Review
+
+   - Transfer learning: Abstraction
+
+     - use abstraction function to make Sim2Real more similar
+
+     <img src="./pics/aerial/week11_transfer_learning.png" alt="week11_transfer_learning" style="zoom:40%;" />
+
+     - How to find the abstraction function
+
+       <img src="./pics/aerial/week11_abstraction_function.png" alt="week11_abstraction_function" style="zoom:40%;" />
+
+   - Imitation learning by using current SOTA method (RRT , A*, MPC, LQR) as GT
+
+#### Limitations of Imitation Learning -> RL
+
+- We don’t yet know how to solves tasks like interaction with other agents, dynamic obstacle avoidance, or complex object manipulation.
+- The trained policy does not improve in time.
+
+#### RL limitations
+
+- Design a reward function, then learn via interaction
+
+  difficult to design the reward function
+
+- state space
+
+  vision-based state space is huge -> hard to guarantee enough coverage of the state space
+
+### challenge3: Guarantee the platform's safety during training and testing
+
+- difficult to interpret -> **measuring uncertainty**
+
+> Loquercio et al., A General Framework for Uncertainty Estimation in Deep Learning, RA-L 2020
+
+- uncertainty: data uncertainty & model uncertainty
+- Demonstrator: future motion prediction; closed loop control of a Quadrotor
+
+### Takeaways
+
+1. Car-Driving Datasets or Simulation can be used to train deep navigation systems.
+2. Transfer knowledge via input and output abstractions.
+3. Measuring the networks’ uncertainty is necessary to guarantee safety.
+
