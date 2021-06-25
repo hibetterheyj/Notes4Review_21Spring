@@ -373,7 +373,7 @@ frame; control board; Motors and motor drivers (ESC, electronic speed controller
 
 ### Energy in hovering
 
-<img src="./pics/aerial/week_energetics.png" alt="week_energetics" style="zoom:67%;" />
+<img src="./pics/aerial/week1_energetics.png" alt="week1_energetics" style="zoom:67%;" />
 
 - Power calculation of single motor when drone in hovering
   - Propeller efficiency ranges from 0.85 to about 0.9
@@ -437,7 +437,93 @@ frame; control board; Motors and motor drivers (ESC, electronic speed controller
 
   then goes down because the drag force increases again
 
-# :construction: Attitude representations (week2)
+# Attitude representations (week2)
+
+<img src="./pics/aerial/week2_frame.png" alt="week2_frame" style="zoom: 33%;" />
+
+- how to convert state variables from body frame to earth frame
+
+## 3D Attitude representation- Euler Angles
+
+- Rotation matrices can be parametrize by Euler Angles
+
+  - Roll $\phi$: rotation around x
+  - Pitch $\theta$: rotation around y
+  - Yaw $\psi$: rotation around z
+
+  <img src="./pics/aerial/week2_euler.png" alt="week2_euler" style="zoom: 33%;" />
+
+- Yaw-Pitch-Roll rotation matrix (Z,Y,X) or Heading-Pitch-Roll (h-p-r)
+
+  <img src="./pics/aerial/week2_euler_ypr.png" alt="week2_euler_ypr" style="zoom: 67%;" />
+
+  can be summarized as $R=R_{\phi} R_{\theta} R_{\psi}$ （左乘）
+
+- :construction: Claw Example
+
+  rotation + translation
+
+  补充示例！！！
+
+- Issues: gimbal lock problem
+
+  - sensitive to singularities-when pitch angle is 90 degrees, **roll and yaw**
+    **rotations give the same sensor readings**
+
+    lost 1 DoF
+
+    $R=R_{\phi} R_{\frac{\pi}{2}} R_{\psi}=\left[\begin{array}{ccc}0 & 0 & -1 \\ \sin \phi \cos \psi-\cos \phi \sin \psi & \sin \phi \sin \psi+\cos \phi \cos \psi & 0 \\ \cos \phi \cos \psi+\sin \phi \sin \psi & \cos \phi \sin \psi-\sin \phi \cos \psi & 0\end{array}\right]=$
+    $\left[\begin{array}{ccc}0 & 0 & -1 \\ \sin (\phi-\psi) & \cos (\phi-\psi) & 0 \\ \cos (\phi-\psi) & -\sin (\phi-\psi) & 0\end{array}\right]$
+
+  - **fail to produce reliable estimates** when the pitch angle approaches 90 degrees.
+  - can only be solved by **switching to a different representation** methods, for example **quaternions**
+
+## Quaternion
+
+> the union of scalar and vector
+
+<img src="./pics/aerial/week2_quaternion.png" alt="week2_quaternion" style="zoom: 50%;" />
+
+- rotation vector = quet * vector * quet^(-1)
+
+  <img src="./pics/aerial/week2_rotata_quet.png" alt="week2_rotata_quet" style="zoom: 33%;" />
+
+  - $ p = [0, \mathbf{p}]$ vector in 3-space
+
+  - $q = [s, \lambda \hat{\mathbf{v}}]$ Must meet these requirements
+
+    $\vert \hat{\mathbf{v}} \vert = 1$; $s^2 + \lambda^2 = 1$
+
+- multiplication
+
+  <img src="./pics/aerial/week2_euler_mul.png" alt="week2_euler_mul" style="zoom: 33%;" />
+
+  $q=\left[\cos \frac{1}{2} \theta, \sin \frac{1}{2} \theta \hat{\mathbf{v}}\right]$ works for relative to x axis ($\theta$)
+
+  week2_quaternion_mat.png
+
+  <img src="./pics/aerial/week2_quaternion_mat.png" alt="week2_quaternion_mat" style="zoom: 67%;" />
+
+**:construction: Claw Example**
+
+rotation + translation using quaternions
+
+### Conversion
+
+- Euler angles to quaternion
+- Quaternion to Euler angles (arctan2 is recommended)
+
+## Complex examples
+
+> frame: image/centered -> camera -> gimbal -> body -> local
+
+$v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{p}$
+
+****:construction: 注意谁相对谁！！！​** 
+
+## Checkpoints
+
+- nothing left in this course
 
 # :construction: Control (week2&3)
 
