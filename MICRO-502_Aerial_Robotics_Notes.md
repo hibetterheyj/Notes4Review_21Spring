@@ -6,9 +6,436 @@
 >
 > Last updated on 2021/05/04
 
-# :construction: Intro (week1)
+# Intro (week1)
 
-# :construction: Multicopters (week1)
+## Overview
+
+- Most Civilian Drones are Small
+
+  - flapping wings: operates in small scale; short flight time
+  - rotorcraft/multicopters: in medium; could hover in place
+  - fixed wings: fixed has longest flight time; cannot hover in place
+
+- but endurance is a challenge
+
+  <img src="./pics/aerial/week1_endurance_mass.png" alt="week1_endurance_mass" style="zoom:50%;" />
+
+## Fixed wing Staying in the Air
+
+generate a force **Lift** L equal and **opposite** to its own **weight** W
+
+<img src="./pics/aerial/week1_hovering.png" alt="week1_hovering" style="zoom:50%;" />
+
+fixed-wing generates by airflow
+
+- computing **lift**: $W=\frac{1}{2} C^{l} * \rho {*} V^{2} * S \approx 0.3 * 1.25 * V^2 * S$ (sea level)
+
+  - lift coefficient $C^{l}$: proportional to angle of attack
+
+    at cruise speed $6^{\circ}$, assuming $\frac{1}{2} C^{l}= 0.2$ 
+
+  - Air density: decreases with the altitude
+
+     1.25 $kg/m^3$ at sea level
+
+  - Air speed V: fly 2x as fast -> 4x lift
+
+  - Wing area S
+
+- compute the required **velocity** $V = \sqrt{(W / 0.38 * S)}$
+
+- Speed is proportional only to **wing loading** W/S $W/S = 0.38V^2$
+
+## Maintaining constant speed V
+
+- generate a **thrust** force T equal and opposite to **Drag** force D
+
+- Drag  $D=\frac{1}{2} C^{d} * \rho {*} V^{2} * S = \rm{Lift}/r $
+
+  lift-drag ratio $r = Lift/Drag$
+
+## Major Application Fields
+
+- Agriculture
+- Energy
+- Public safety & security
+- Delivery
+
+###For Agriculture
+
+- fixed-wing
+
+  inspection: large fields; few lights/value
+
+- quadcopter
+
+  spraying: small fields; high-value crops; difficult terrain
+
+### For Energy
+
+- stationary inspection
+
+  fire, related to human safety
+
+- long-range inspection
+
+  frequent, faster inspection to powerline, gasoline
+
+- Power generation
+
+  strong & steady winds
+
+### For Public safety & security
+
+- in-vehicle
+
+  policeman
+
+- long-range
+
+  **Border** patrol, fast intervention
+
+### For Delivery
+
+#### Category
+
+- Long-range: fixed wing; combination of wing and rotors to cover long distance
+- Short-range: multicopter
+
+Forcast: parcel delivery > air freight in near future
+
+#### «Can Drones Deliver?»
+
+- Power requirement: 0.59kW
+
+  deliver 2 kg payload at cruising speed of 45 km/h
+
+- Energy requirement: about 0.39kWh
+
+  deliver 2 kg payload within 10 km radius with 30 km/h headwind
+
+  - power (kW) x distance to speed ratio (d/v) to get energy requirement (kWh)
+  
+- Battery & Platform: choose considerations -> cost; weight; energy density; lifetime
+
+- Economics: Electricity/Battery cost per km
+
+#### Last-cm delivery - Dronistics
+
+- Packdrone + SimplyFly
+
+  Protective foldable cage; Redundant GPS
+
+- Temperature-control box
+
+## Checkpoints
+
+- For a given total mass, what type of small drones (multi-copter, fixed-wing, flapping  wing) displays the longest endurance?
+
+  fixed-wing
+
+  > fixed-wing drones generate lift with their wings. This means that, unlike a multirotor drone, they don't expend large amounts of energy just to stay in the air and fly more efficiently as a result
+
+- How much faster must an intercontinental airplane fly at cruising altitude compared to sea level?
+
+  $W=\frac{1}{2} C^{l} * \rho {*} V^{2} * S \rightarrow V = \sqrt{\frac{2W}{C^l \rho S}}$
+
+  - sea level: $\rho = 1.25kg/m^3$
+  - intercontinental airplane fly ~10000m: $\rho = 0.4135kg/m^3$
+
+- What structural factor (i.e. not the engine) affects the cruising speed of fixed-wing  drones?
+
+  Speed is only proportional to wing loding (W/S) = Weight/Wing area
+
+- What are the two major drone applications in agriculture?
+
+  Inspection and spraying
+
+- What are the drone applications in the energy sector?
+
+  Stationary inspection; long-range inspection; and power generation
+
+- What are the factors to consider for calculating the cost/km of drone delivery?
+
+  Electricity cost and battery cost
+
+# Multicopters (week1)
+
+|              | Fixed wing         | Flapping wing             | rotating wing                        |
+| ------------ | ------------------ | ------------------------- | ------------------------------------ |
+| **Examples** | airplanes, gliders | new robots                | helicopters, multicopters            |
+| **Pros**     | Fast; Efficient    | Efficient                 | Can hover;Highly maneuverable        |
+| **Cons**     | Cannot Hover       | Hard to build and control | Less efficient                       |
+| **Features** |                    | Scale down in size        | Vertical take-off and landing (VTOL) |
+
+## Introduction
+
+### Rotorcrafts (helicopters vs multicopters)
+
+> generates lift using high speed rotary blades called rotors
+
+- Features
+
+  - Vertical take-off and landing (VTOL)
+  - Very maneuverable
+  - Less efficient than fixed wing vehicle
+
+- helicopters-Need complex variable pitch rotors
+
+  - the tail produce a moment to counteract the force generated by main propeller blade when generating main lift
+  - change the pitch of the blades (force vector) to produce translation-add complexity
+
+- multicopters-Use multiple fixed-pitch blades
+
+  - each spin in different directions; don't need tails due to balanced moment
+  - fix pitch propellers 
+
+  > overtaken by helicopters due to heavy workload of the pilot
+
+### Pros and Cons
+
+#### Pros-Easy to build and maintain
+
+- Mechanically simple
+- Does not require any complex mechanical parts
+- Can move around by changing motor speed
+- Can hover, takeoff, and land vertically
+
+#### Cons
+
+- Required energy constantly to hover
+- **less efficient** than helicopters of the same size because the **thrust is generated by smaller propellers**.
+
+## Structure and Physics
+
+### Main components
+
+frame; control board; Motors and motor drivers (ESC, electronic speed controller); Propellers; Battery; Receiver
+
+### Configuration
+
+- Four propellers generate four lift forces
+
+- Propellers 1& 2 (CCW) have opposite pitch compared to propellers 3 & 4 (CW)
+
+  <img src="./pics/aerial/week1_frame.png" alt="week1_frame" style="zoom:80%;" />
+
+### Rotation speeds / Forces / Moments
+
+> movement are controlled by changing the rotation speed of the propellers
+
+- Force F is **proportional to square of** propeller **speed** $F_i \propto w_i^2$
+- mg is the **weight** of the quadrotor
+- **Moments** generated by the forces are $M_i = L \propto F_i$
+
+<img src="./pics/aerial/week1_force.png" alt="week1_force" style="zoom:40%;" />
+
+### Hover conditions
+
+1. All forces must be balanced $F_1+ F_2+ F_3+ F_4+ mg = 0$
+
+   move up and down
+
+2. Lift forces must be parallel to gravity $F_i \Vert g$
+
+3. All moments must be balanced $M_1+M_2+M_3+M_4 = 0$
+
+   pitch and roll
+
+4. Rotor speeds must be balanced (torque balanced) $(w1+w3)-(w2+w4) =0$
+
+   yaw
+
+## Flight mechanics
+
+> How to move a quadrotor around?
+
+- **Orientation**
+
+  <img src="./pics/aerial/week1_rpy.png" alt="week1_rpy" style="zoom:50%;" />
+
+
+> Violating one or more of these conditions implies that **the quadcopter starts to move**
+
+### Moving Up and Down
+
+- **condition1**: Forces Not balanced $F_1+ F_2+ F_3+ F_4+ mg \neq 0$
+
+### Rotating in Yaw
+
+<img src="./pics/aerial/week1_rollpitch.png" alt="week1_rollpitch" style="zoom:50%;" />
+
+- Rotor speeds not balanced (torque balanced) $(w1+w3)-(w2+w4) \neq 0$
+
+  $\dot{\psi}=k_{\psi}\left(\left({w}_{2}+{w}_{4}\right)-\left({w}_{1}+{w}_{3}\right)\right)$
+
+- Note: opposite motor pair should increase/decrease motor speeds to keep hovering, or it will keep flying up!
+
+### Rotation in Roll/Pitch
+
+- Forces not parallel to gravity $F_i \nparallel mg $
+
+- moments not balanced $M_1+M_2+M_3+M_4 \neq 0$
+
+  $\dot{\phi}=k_{\phi}\left(\left(w_{1}+w_{4}\right)-\left(w_{2}+w_{3}\right)\right)$
+
+  $\dot{\theta}=k_{\theta}\left(\left(w_{1}+w_{2}\right)-\left(w_{3}+w_{4}\right)\right)$
+
+### Summary of equations
+
+<img src="./pics/aerial/week1_speed2motion.png" alt="week1_speed2motion" style="zoom:80%;" />
+
+- to control the quadrotor state -> setting the rotor speeds for obtaining a desired angular rotation
+
+  **inverse** operation
+
+### Example-Translated flight
+
+> Moving Forward
+>
+> Translated flight **requires more thrust than hovering**, but not always more power (see section 6)!
+
+- pitch down: decrease F_1 and F_2
+
+- hover: increase F_1 and F_2 to stop rotation
+
+- translate: keep balance between mg and thrust $\mathbf{F} \cos \theta=-m g$
+
+  <img src="./pics/aerial/week1_move.png" alt="week1_move" style="zoom:40%;" />
+
+- pitch back
+
+## Types of Multicopters
+
+> main feature; fully actuated multicopters
+
+### Configuration
+
+<img src="./pics/aerial/week1_config.png" alt="week1_config" style="zoom:40%;" />
+
+- Tricopter
+
+  - More yaw authority compared to quadcopters
+
+    direct control of yaw
+
+  - More complex mechanical design due to the **servo** in tail
+
+    need additional servo to roll/pitch the back motor
+
+- Hexacopter/Octacopter
+
+  - More lifting capacity -> more payload
+  - **Redundancy**, so robust to failure
+  - Larger size; expensive
+
+- X8 configuration
+
+  - More lifting capacity
+  - **More efficiency** thanks to the **coaxial configurations**
+
+### Fully Actuated Multicopters
+
+> underactuated multicopters -> all propellers are rotated in the same plane
+
+#### Features
+
+- Rotors disks are in different planes
+- Fully Actuated to control 6 DoF (heave, roll, pitch and yaw, x and y translation) by using 6 motors
+
+#### Pros
+
+- Translational and rotational **dynamics** are **decoupled**
+- **improved robustness to disturbances** and to perform complex manipulation tasks
+- Possibility to plan **more complex trajectories**
+
+#### Cons
+
+- Decreased energetic efficiency
+
+## Energetics
+
+> What is the power consumption of a multicopter during flight?
+>
+> How to extend multicopters flight time?
+
+- Multicopters have high power requirements
+
+  inefficient compared to fixed-wing or flapping-wing aircraft
+
+  - consume about 200 W/kg on average
+
+  - Centimeter scale quad with LiPo -> 5-7min
+
+  - Decimeter scale quad with LiPo ->20-30min
+
+    changes corresponding to **weather conditions** and **aggressiveness of flight**
+
+### Energy in hovering
+
+<img src="./pics/aerial/week_energetics.png" alt="week_energetics" style="zoom:67%;" />
+
+- Power calculation of single motor when drone in hovering
+  - Propeller efficiency ranges from 0.85 to about 0.9
+  - $r_p \sqrt{\pi}$ is the squire root of the disk area
+- Flight time
+  - $P_i$ has high variability
+
+### Energy in forward flight of quadcopter
+
+- Power consumption during forward flight normalized by the power consumption at hover
+
+  <img src="./pics/aerial/week1_translation_flight.png" alt="week1_translation_flight" style="zoom: 33%;" />
+
+  - lower power need but higher thrust -> aerodynamics
+
+    tilting the quad to the side -> **artificially increase the angle of attack -> generate the increase in thrust in the given power**
+
+  - high power ratio again
+
+    drag increases quickly again!
+
+### Increase flight time
+
+1. Weight and drag reduction
+
+2. Increase the specific power of the energy source
+
+   switch from LiPo batteries to gasoline (far more energy stored)
+
+3. Docking station for charging/battery swapping
+
+4. Tether for power supply
+
+   reduce battery
+
+5. Improving efficiency via mechanical
+
+6. Energy aware motion planning
+
+   reduce acceleration (aggressive flight)
+
+7. Multi-modal operation
+
+   perching; walking and rolling
+
+## Checkpoints
+
+- What set of conditions corresponds to hovering in a quadcopter?
+
+  Four conditions: balanced weight; parallel to weight; balanced moment (thrust x half frame); balanced rotation speed
+
+- What set of conditions corresponds to a rotation around the yaw axis in a quadcopter?
+
+  imbalanced rotation speed
+
+- How the time of flight of multicopters can be increased?
+
+- How the power consumption and total thrust evolve at different forward speeds in multicopters?
+
+  first goes down as thus increases when angle of attack increases
+
+  then goes down because the drag force increases again
 
 # :construction: Attitude representations (week2)
 
@@ -895,11 +1322,149 @@ $\frac{d I(n, m, t)}{d t}=0$
 
 ### Image Interpolation Algorithm –I2A
 
-> computed as the image shift s that generates the smallest error between artificially shifted versions of the image at time t and the image at time t + Δt
+> computed as the **image shift** $s$ that **generates the smallest error between artificially shifted versions of the image** at time t and the image at time t + Δt
+
+<img src="./pics/aerial/week10_optical_flow_i2a.png" alt="week10_optical_flow_i2a" style="zoom: 50%;" />
+
+- used in Crazyflie drone for optical flow calculation
+  1. moves k pixels in opposite ditections to generate different images
+  2. calculate errors between real images and generated ones
+  3. compute the shift s to minimize error
+
+## Obstacle avoidance with I2A
+
+- two cameras to look to left and right with DoF of 40 degrees
+
+  <img src="./pics/aerial/week10_optical_flow_i2a_drone.png" alt="week10_optical_flow_i2a_drone" style="zoom: 50%;" />
+
+  - OFDiv = OFRight - OFLeft initiate rotation if OFDiv > threshold
+  - OFDiff = abs[OFRight] - abs[OFLeft] rotate towards OFDiff
+
+- use cameras (optical flow) and gyro with mechanisms (rudder方向舵/elevator升降舵) to control more DoF systems
+
+  Zufferey, Klaptocz, Beyeler, Nicoud and Floreano (2007), Advanced Robotics
+
+- control pitch and roll of fixed-wing drones by building relation **between optical and control planes directly**
+
+  A. Beyeler, J.-C. Zufferey and D. Floreano (2009) Autonomous Robots, 27(3), 201-219
+
+  - Ailerons to control roll
+  - Elevator to control roll
+
+  <img src="./pics/aerial/week10_optical_flow_i2a_control.png" alt="week10_optical_flow_i2a_control" style="zoom: 50%;" />
+
+  - use the information from optical flow estimator when the drone closes to the ground
+
+- Making an Artificial Compound Eye
+
+  > Floreano, Pericet-Camara, Viollet et al, PNAS, 2013
+
+## Checkpoints
+
+- Influence of agent’s rotation and translation on optic flow and distance estimation
+
+  - rotation flow gives no information about distance; only proportional to the angular velocity of the agent
+
+  - cannot calculate absolute distance if do not know speed
+
+- Influence of angular velocity, spatial frequency, and temporal frequency on EMD
+
+  ?
+
+- Functioning of Image Interpolation Algorithm
+
+  ?
+
+- Methods for discounting rotational optic flow
+
+  remove the rotational optical flow by using IMU to measure yaw angle
 
 # Adaptive Morphology in Flying Animals and Drones (week10)
 
+## Bioinspired Mechanical Resilience
 
+### How do insects cope with collisions?
+
+- drones hit to obstacle and fall into the ground will lead to damage
+
+- inspired from insects
+
+  1. Sturdy yet **flexible** exoskeleton | 坚固而灵活的外骨骼
+
+  2. Dual stiffness wing | 双刚度翼
+
+     can bend with surface
+
+> Mintchev, de Rivaz, Floreano, Insect-Inspired Mechanical Resilience for Multicopters, IEEE Robotics & Automation Letters, 2017
+
+- Frames could
+  - transit from stiff to soft state
+  - useEnergy absorbing material
+
+> An active uprighting mechanism for flying robots, Klaptocz et al., IEEE Transactions on Robotics, 2012
+
+- Morphology simplifies control - frame could fly against obstacle
+
+> Briod, Kornatowski, Zufferey, Floreano, A collision‐resilient flying robot, Journal of Field Robotics, 2014
+>
+> flyability
+
+- separate from inner and outer frame while keeping collision prevention indoors
+
+## The Size Problem
+
+### Self-deployable origami drone
+
+> Mintchev, Daler, L’Eplattanier, Saint_Raymond, Floreano, **Foldable and self-deployable pocket sized quadrotor**, ICRA, 2015
+
+- more durable when collides with obstacle
+
+### Origami Drone Wing
+
+> Dufour, Owen, Mintchev, Floreano, **A drone with insect-inspired folding wings**, IROS 2016
+
+## Adaptive Morphology
+
+- fixed-wing: only fly upper in the sky cannot stop
+- quadrotor: less efficient and short range
+
+> Daler, Lecoeur, Hählen, Floreano, A flying robot with adaptive morphology for multi-modal locomotion, IROS Proceedings, 2013
+>
+> A bioinspired multi-modal flying and walking robot, Bioinspiration & Biomimetics, 2015
+
+- can use wing to fly and rotate wing to walk on the ground
+
+  Air and Ground Locomotion
+
+> Ajanic, Feroshkan, Mintchev, Noca, & Floreano (2020) Science Robotics
+
+- Morphing Wings to adapt different winds
+
+- LIS hawk inspired from northern goshawk
+
+  <img src="./pics/aerial/week10_morphing_wing.png" alt="week10_morphing_wing" style="zoom:40%;" />
+
+- Maneuverability
+
+  able to change the velocity vector by changing the wing status
+
+  higher linear accelerations on body frame/higher lift/drag coefficient
+
+- Agility
+
+  able to change angular rate, e.g. pitch and roll angles
+
+  Higher angular rates are produced by larger pitch and Agility roll coefficients by **extending the wing** or not
+
+- Power requirement and speed range
+
+  **Extending wing and tail** **increases lift** and allows lower speed range
+
+## Checkpoints
+
+- Strategies for collision resilience in flying animals and robots
+- Trade-offs between aerial and ground locomotion that require adaptation
+- Effects of wing and tail span on lift and drag coefficients, and on required power
 
 # Agile Flight (week11)
 
