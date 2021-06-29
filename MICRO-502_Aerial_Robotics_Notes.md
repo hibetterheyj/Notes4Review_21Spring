@@ -128,7 +128,7 @@ Forcast: parcel delivery > air freight in near future
 
 - Temperature-control box
 
-## Checkpoints
+## :ballot_box_with_check: Checkpoints
 
 - For a given total mass, what type of small drones (multi-copter, fixed-wing, flapping  wing) displays the longest endurance?
 
@@ -419,7 +419,7 @@ frame; control board; Motors and motor drivers (ESC, electronic speed controller
 
    perching; walking and rolling
 
-## Checkpoints
+## :ballot_box_with_check: Checkpoints
 
 - What set of conditions corresponds to hovering in a quadcopter?
 
@@ -519,15 +519,375 @@ rotation + translation using quaternions
 
 $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{p}$
 
-****:construction: 注意谁相对谁！！！​** 
+**:construction: 注意谁相对谁！！！​** 
 
-## Checkpoints
+## ✖️ Checkpoints
 
 - nothing left in this course
 
-# :construction: Control (week2&3)
+# Control (week2&3)
 
-# :construction: State Estimation (week3&4)
+> 结合exercise进行再次查看
+
+## Cascaded control Architecture
+
+- drone architecture
+
+  <img src="./pics/aerial/week2_control_diagram.png" alt="week2_control_diagram" style="zoom: 33%;" />
+
+- communication: glue to connect different parts (FCU to onboard computer to ground station)
+
+- PID controller
+
+  <img src="./pics/aerial/week2_pid.png" alt="week2_pid" style="zoom: 33%;" />
+
+  - Open-loop
+  - Feedforward control
+    - responds to its control signal in a **pre-defined way**
+    - based on a **previous knowledge** of the system
+  - Feedback control
+
+- control example
+
+  | Examples    | Free-flight glider | Passively stable helicopter | Racing drone         | Autonomous Delivery drone          |
+  | ----------- | ------------------ | --------------------------- | -------------------- | ---------------------------------- |
+  | Sensors     | None               | None                        | IMU                  | IMU + GPS + Vision + Mag           |
+  | Controllers | None               | None                        | (Attitude), Rate     | Position, Velocity, Attitude, Rate |
+  | Setpoint    | None               | Manual actuator setpoint    | Manual rate setpoint | Autonomous navigation/Manual       |
+
+- challenges
+  - underactuated system for quadcopter
+  - approximate aerodynamic model
+  - control inputs are idealized (the **real model of the motors** can be quite hard to model)
+
+<img src="./pics/aerial/week2_cascaded_control.png" alt="week2_cascaded_control" style="zoom: 33%;" />
+
+- features
+
+  - insert the obstacle avoidance together with velocity setpoint
+  - manual commands send thrust and attitude rate commands
+  - **the lowest level of the controller, the higher bandwidth it needs**
+
+- Pros
+
+  - Decouple translational and rotational dynamics
+
+  - Facilitate implementation of the controller
+
+    implement one by one
+
+  - Better failure diagnosis capability
+
+    modular control architecture for debugging them one by one
+
+- Question: why a more advanced controller?
+
+  - linear assumption vs nonlinear system
+  - more advanced system can bring optimal performance
+
+## Control allocation
+
+> convert **thrust & torque** setpoint into **actuator** commands
+>
+> account for different geometries
+
+<img src="./pics/aerial/week2_control_allocation.png" alt="week2_control_allocation" style="zoom: 50%;" />
+
+- from **thrust & torque** setpoint into **actuator**
+
+  $\left[\begin{array}{c}u_{0} \\ \vdots \\ u_{N-1}\end{array}\right]=B\left[\begin{array}{l}\tau_{x} \\ \tau_{y} \\ \tau_{z} \\ t_{z}\end{array}\right]$
+  $u$ : actuator commands (Nx1)
+
+  $\mathcal{T}:$ moment setpoints (3x1)
+
+  $t:$ thrust setpoint $(1 \times 1)$
+
+### Method
+
+<img src="./pics/aerial/week2_allocation_method.png" alt="week2_allocation_method" style="zoom: 50%;" />
+
+1. Compute generated force and torque of each actuator
+
+2. Build matrix "Actuator **Effectiveness**"
+
+3. Compute **allocation matrix** B as the **pseudo-inverse** of A
+
+   not always square, so using pseudo-inverse ($B = A^+$)
+
+### Remark
+
+- less effective at producing yaw torque
+
+- yaw torque requires more actuator effort than roll and pitch torque
+
+  <img src="./pics/aerial/week2_control_allocation_example.png" alt="week2_control_allocation_example" style="zoom: 50%;" />
+
+## Rate control
+
+**Input** body rate setpoint -> **Output** torque to each angle rate
+
+## Attitude control
+
+**Input** quaternions setpoint -> **Output** torque to each angle rate
+
+- How to compute the quaternion error
+
+  $\boldsymbol{q}_{e r r}=\boldsymbol{q}_{\boldsymbol{r e f}} \otimes \boldsymbol{q}_{m}^{*}$
+
+- axis error
+
+  $\left[\begin{array}{c}
+  \Phi_{e} \\
+  \Theta_{e} \\
+  \Psi_{e}
+  \end{array}\right] \approx \operatorname{sgn}\left(q_{e}^{0}\right)\left[\begin{array}{l}
+  2 q_{e}^{1} \\
+  2 q_{e}^{2} \\
+  2 q_{e}^{3}
+  \end{array}\right]$
+
+### Full quaternion based attitude control for a quadrotor
+
+> Fresk, E. and Nikolakopoulos, G., 2013, July. Full quaternion based attitude control for a quadrotor. In 2013 European control conference (ECC) (pp. 3864- 3869). IEEE.
+
+- without any transformations and calculations in the Euler’s angle space
+
+- quaternions
+
+  - scalar + vector part
+
+    $\boldsymbol{q}=q_{0}+q_{1} \boldsymbol{i}+q_{2} \boldsymbol{j}+q_{3} \boldsymbol{k} = [q_0, q_1, q_2, q_3]^{\mathsf{T}}$
+
+  - Multiplication of two quaternions p, q is being performed by the **Kronecker product**
+
+  - $p \otimes q$ represents the combined rotation
+
+  - quaternion multiplication is non-commutative 不遵循交换律
+
+  - All quaternions are assumed to be of **unitary length** 单位长度
+
+  - The **complex conjugate** of a quaternion has the same definition as normal complex numbers 复共轭
+
+    $\operatorname{Conj}(\boldsymbol{q})=\boldsymbol{q}^{*}=\left[\begin{array}{llll}q_{0} & -q_{1} & -q_{2} & -q_{3}\end{array}\right]^{T}$
+
+  - if the length of the quaternion is unitary then the **inverse is the same as its conjugate** 逆即是复共轭
+
+    $\operatorname{Inv}(\boldsymbol{q})=\boldsymbol{q}^{-1}=\frac{\boldsymbol{q}^{*}}{\|\boldsymbol{q}\|^{2}} = {q}^{*}$
+
+- **Rotation transformation** is built by two quaternion multiplications-the normal and its conjugate
+
+  - rotates the **vector v from the fixed frame** to the body frame represented by q
+
+    $\boldsymbol{w}=\boldsymbol{q} \otimes\left[\begin{array}{l}0 \\ \mathbf{v}\end{array}\right] \otimes \boldsymbol{q}^{*}$
+
+    where $\textbf{v}$ can be rewritten as location in x, y and z axis. For example,
+
+    $R_{x}(\boldsymbol{q})=\boldsymbol{q} \otimes\left[\begin{array}{l}0 \\ 1 \\ 0 \\ 0\end{array}\right] \otimes \boldsymbol{q}^{*}=\left[\begin{array}{c}q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} \\ 2\left(q_{1} q_{2}+q_{0} q_{3}\right) \\ 2\left(q_{1} q_{3}-q_{0} q_{2}\right)\end{array}\right]$
+
+  - $u$ is the rotation axis (unit vector) and $\alpha$ is the angle of rotation
+
+    $\boldsymbol{q}=\cos \left(\frac{\alpha}{2}\right)+\boldsymbol{u} \sin \left(\frac{\alpha}{2}\right)$
+
+- Calculating quaternions error dynamics
+
+  - desired $\mathbf{q}_{ref}$, measured $\mathbf{q}_{m}$, error $\mathbf{q}_{err}$--multiplying the reference with the conjugate of the estimated quaternion in Kronecker
+
+    $\boldsymbol{q}_{e r r}=\boldsymbol{q}_{\boldsymbol{r e f}} \otimes \boldsymbol{q}_{m}^{*}$
+
+- Angular errors: the reference is **demanding a rotation more than π radians**, the closest rotation is the **inverted direction** and this is found by examining q0. If q0 < 0 then the desired orientation is more than π radians away
+
+  $\left[\begin{array}{c}
+  \Phi_{e} \\
+  \Theta_{e} \\
+  \Psi_{e}
+  \end{array}\right] \approx \operatorname{sgn}\left(q_{e}^{0}\right)\left[\begin{array}{l}
+  2 q_{e}^{1} \\
+  2 q_{e}^{2} \\
+  2 q_{e}^{3}
+  \end{array}\right]$
+
+  其中sgn函数就对应着计算$q_0$的正负
+
+## Control strategies for multicopters
+
+- **Inner** loops for attitude dynamics **stabilization**
+- **Outer** loops for **translational dynamics**
+
+### Linear
+
+#### Examples
+
+- Proportional Integral Derivative (PID)
+- Linear Quadratic Regulator (LQR)
+- LQG
+
+#### Features
+
+- a linear **approximation** of the system dynamics
+- used when the attitude of the multicopter involves **angles that are close to zero**
+
+#### PID controller
+
+- Pros: Easy to design; Intuitive to tune manually (not necessarily easy on a real drone)
+
+- Cons: Imprecise nature of the model due to inaccurate modelling; Limits the performance
+
+- Effects of increasing a parameter independently
+
+  <img src="./pics/aerial/week3_pid_effect.png" alt="week3_pid_effect" style="zoom:50%;" />
+
+#### LQR/LQG
+
+- Features
+  - a multirotor (linearized around an equilibrium point) by **minimizing a suitable cost function**
+  - Pros: optimal control method and better than PID (LQR); not need complete knowledge of the state and can rely on estimator/observer (LQG)
+  - Cons: requires tuning of Q and R Matrixes
+- Practical example-Foldable Drone
+  - Attitude control (providing **torques**) requires adaptation since morphology has an impact on the rotation dynamics
+- Effect of Q and R matrixes
+  - design parameters to penalize (1) the **state** variables and (2) the **control** signals
+  - Large value: stabilize the system with less change in S**tate (Q) and Control input (R)**
+  - Small value: stabilize the system without “caring too much” about ...
+
+### Nonlinear
+
+#### Examples
+
+- Model Predictive Control (MPC)
+- Artificial Neural Networks
+
+#### Features
+
+- The **stability domain** of a drone controlled with a nonlinear controller can be **bigger**
+- **a better model** of the drone can lead to better performances
+- **allows to take explicitly into account aerodynamic effects and forces** acting on the drones
+
+## An introduction to fully actuated multirotor UAVs
+
+- conventional ones have coupling between the horizontal translational and rotational dynamics
+
+- fully actuated can help decouple translation and rotation; have direct control to corresponding DoF
+
+  key: **allocation matrix changes**
+
+  - Fixed-tilt
+
+    don't need additional motors
+
+  - Variable-tilt: change tilt of propellers to achieve desired motion
+
+    can achieve optimal configuration but with **complex mechatronics and control**
+
+## :ballot_box_with_check: Checkpoints
+
+- What is the size of the control allocation matrix of an hexacopter with **4 controlled degrees of freedom**?
+
+  - hexacopter 六轴，6motors
+
+  - Effectiveness matrix: 4x6
+
+  - Controller allocation: 6x4
+
+    Output: 6 motors; input B x (3torque + 1thrust)
+
+- transformation relationship to torque and thrust for each rotor
+
+- Why do we use the **pseudo inverse** instead of standard matrix inverse to compute the control allocation matrix from the actuator effectiveness matrix?
+
+  there existing other layout of multicopters except for quadcopters with 4 rotors
+
+- What happens when a rate setpoint [0 0 1] is applied?
+
+  rotate counterclockwise with 1 rad/s in yaw angle
+
+- What are the input and output of the rate controller?
+
+  Input: rate setpoint
+
+  Output: generated angle torque
+
+- What happens when an attitude setpoint [0 0 pi/2] is applied?
+
+  rotate counterclockwise with pi/2 in yaw angle
+
+- What are the input and output of the attitude controller in a cascaded architecture?
+
+  Input: quaternion setpoint
+
+  Output: generated angle rotation rate
+
+- What is the output of the attitude controller in a cascaded architecture?
+
+  :construction: Output: generated angle rotation rate?
+
+- How to compute attitude error quaternion from the estimated attitude quaternion and the attitude setpoint quaternion?
+
+# State Estimation (week3&4)
+
+## Introduction to State Estimation
+
+- **STATE**: variables used to describe the mathematical state of a dynamical system
+- **ESTIMATION**: finding an approximation of state variables even if the data is incomplete, uncertain, or unstable
+- **estimate** something which you **can not see or measure directly**
+
+### Why State Estimation in Robotics?
+
+- Perfect model & sensor are not available; **Errors** exist in **both sensors & models**
+  - State of the robot (proprioception)
+  - State of the environment (exteroception)
+
+- **State Estimation on Aerial Robots**
+
+  Height; **Attitude; Angular velocity** (Most important as they are the **primary variables used for the stabilization** of the UAV); linear velocity
+
+  - main sensors
+    - **Inertial** Measurement Unit (IMU)
+    - **Height** Measurement (Acoustic, infrared, barometric, laser based)
+    - Others: Global Navigation Satellite System (GNSS, outdoor) or VICON (indoor); Camera, Kinect, LIDAR
+
+## Estimation for deterministic systems
+
+### State Observer (or Luenberger Observer)
+
+- minimize the error between measured and estimated values
+
+<img src="./pics/aerial/week3_state_observer.png" alt="week3_state_observer" style="zoom:30%;" /> <img src="./pics/aerial/week3_state_observer2.png" alt="week3_state_observer2" style="zoom:30%;" />
+
+- how do we choose the “feedback loop” gain K ?
+
+### Dynamical Systems
+
+<img src="./pics/aerial/week3_dynamical_system.png" alt="week3_dynamical_system" style="zoom:50%;" />
+
+## State Estimation for stochastic systems
+
+### Recap of fundamental concepts
+
+### Kalman filter (KF)
+
+use Gaussians to implement a Bayesian filter. That’s all the **Kalman filter** is - a Bayesian filter that uses Gaussians
+
+### Intro to EKF, UKF and particle filters
+
+## State Estimation in aerial robotics
+
+## :ballot_box_with_check: Checkpoints
+
+- What structure does the Luenberger Observer remind you?
+
+  :construction: control loop?
+
+- What does the Kalman Filter (KF) gain do?
+
+- For which kind of dynamical systems the KF is useful?
+
+- What do we need to know a-priori if we want to apply the KF?
+- What are the advantages/disadvantages of the **UKF** w.r.t an **EKF**?
+- What are the advantages/disadvantages of a **particle filter** w.r.t an **UKF**?
+
+## :construction: Exercise summary
+
+
 
 # :construction: Navigation Methods (week5)
 
@@ -923,6 +1283,10 @@ The combination of centralized planning/control with external positioning has **
 
   airspace in block to avoid collision and report the location for further path calculation
 
+## Checkpoints
+
+
+
 # UAS Hardware (week9)
 
 ## Introduction
@@ -1290,38 +1654,56 @@ The combination of centralized planning/control with external positioning has **
 - Global Navigation Satellite System (GNSS): This term includes 
 
   - e.g. the GPS, GLONASS, Galileo, Beidou and other regional systems. 
-  - The advantage to having access to multiple satellites is accuracy, redundancy and availability at all times.
+  - Pros: **multiple satellites is accuracy, redundancy and availability at all times.**
 
-- Relatively lower accuarcy: have a position accuracy within 20 m in the horizontal plane and 45 m in the vertical plane
+- Relatively lower accuracy: have a position accuracy within 20 m in the horizontal plane and 45 m in the vertical plane
 
 - **enhancement techniques**
 
-  - **WAAS** or other ground-based services: static
+  - **WAAS** or other **ground tower**-based services: static
 
-    get close to 1-2 m accuracy
+    get close to **1-2 m accuracy**
 
   - **Real time Kinematic (RTK)** positioning: Base
-    Station receiver and a receiver on the vehicle
+    **Station receiver and a receiver on the vehicle**
 
-    close to 1 cm accuracy
+    close to **1 cm accuracy**
 
 ### Power sensors
 
-- used to measure the battery voltage/current -> trigger safety procedures (return to home on low battery.)
+- measure the **battery voltage/current**
+- -> trigger safety procedures (return to home on low battery.)
 
 ### Optic flow cameras
 
 - used to improve **state estimation** for accurate positioning and **height estimation** also in **GPS denied environments**
-- measure the movements along x, y and z direction  by tracking the features
+- measure the movements along x, y and z direction by tracking the features
 - used for obstacle avoidance, position holding, and precise landing
 
 <img src="./pics/aerial/week9_UAS_Hardware_optical_camera.png" alt="week9_UAS_Hardware_optical_camera" style="zoom:40%;" />
 
 ## Autopilots
 
+> system used to **stabilize** (e.g. attitude stabilization of a multicopter) or to **control the trajectory**
+
+- Microcontroller
+- Attitude sensors
+- I/O interfaces
+
+receive the input information -> process information -> send actuator commands
+
+<img src="./pics/aerial/week9_UAS_Hardware_Autopilot_connection.png" alt="week9_UAS_Hardware_Autopilot_connection" style="zoom:40%;" />
+
+- A **companion computer** is used to perform high level computation tasks **that can’t be directly performed by the autopilot**
+
 ## Communication protocols
 
+- **RC transmitter** to communicate between RC and flight controller
+- **Telemetry** to communicate between PC and flight controller
 
+## ✖️ Checkpoints
+
+- nothing left in this course
 
 # Insect-inspired vision (week10)
 
@@ -1376,10 +1758,9 @@ Optic flow is detected by neurons in the lamina (椎板), whose response is aggr
 
 - Correlation between two adjacent, time-delayed contrast detectors | 两个相邻的延时对比检测器（小眼）之间的相关性
 
-  - photo receptor -> temporal delay -> correlation -> subtraction- 
+  - photo receptor -> temporal delay -> correlation -> subtraction-
 
-  - the speed of motion can 
-  - be detected as the peak the motion
+  - the speed of motion can be detected as the peak the motion
   - **not** a **reliable** velocity estimator -> depends on temporal and
     <u>spatial frequency</u> -> cannot measure velocity objectively
 
@@ -1445,7 +1826,7 @@ $\frac{d I(n, m, t)}{d t}=0$
 
   > Floreano, Pericet-Camara, Viollet et al, PNAS, 2013
 
-## Checkpoints
+## :ballot_box_with_check: Checkpoints
 
 - Influence of agent’s rotation and translation on optic flow and distance estimation
 
@@ -1453,13 +1834,17 @@ $\frac{d I(n, m, t)}{d t}=0$
 
   - cannot calculate absolute distance if do not know speed
 
-- Influence of angular velocity, spatial frequency, and temporal frequency on EMD
+- Influence of angular velocity, spatial frequency, and temporal frequency on EMD (elementry motion decoder)
 
-  ?
+  :construction:
+
+  - angular velocity
+  - spatial frequency
+  -  temporal frequency
 
 - Functioning of Image Interpolation Algorithm
 
-  ?
+  generate optical flow by computing **image shift** $s$ to minimize the overlap error
 
 - Methods for discounting rotational optic flow
 
@@ -1485,7 +1870,7 @@ $\frac{d I(n, m, t)}{d t}=0$
 
 - Frames could
   - transit from stiff to soft state
-  - useEnergy absorbing material
+  - use Energy absorbing material
 
 > An active uprighting mechanism for flying robots, Klaptocz et al., IEEE Transactions on Robotics, 2012
 
@@ -1546,11 +1931,28 @@ $\frac{d I(n, m, t)}{d t}=0$
 
   **Extending wing and tail** **increases lift** and allows lower speed range
 
-## Checkpoints
+## :ballot_box_with_check: Checkpoints
 
 - Strategies for collision resilience in flying animals and robots
+
+  - inserts
+    - Sturdy yet **flexible** exoskeleton | 坚固而灵活的外骨骼
+    - Dual stiffness wing | 双刚度翼
+  - Robots
+    - dual-stiffness frame and energy-absorbing material
+    - Use morphology when against obstacle
+    - Design flexible protective frame
+
 - Trade-offs between aerial and ground locomotion that require adaptation
+
+  :construction: can use wing to fly and rotate wing to walk on the ground
+
 - Effects of wing and tail span on lift and drag coefficients, and on required power
+
+  > Extending for aggressive flight while Tucking wing (折翼) for cruise flight
+
+  - **Tucking** -> **reduces power requirement** at high speeds
+  - **Extending** -> **increases lift**;
 
 # Agile Flight (week11)
 
