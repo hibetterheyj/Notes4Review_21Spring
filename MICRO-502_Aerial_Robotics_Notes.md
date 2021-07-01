@@ -4,7 +4,9 @@
 
 > Lecture notes by Yujie He
 >
-> Last updated on 2021/05/04
+> Last updated on 2021/07/02
+>
+> **All checkpoints summary can be found [here](https://go.epfl.ch/aerial-rob-2021)!**
 
 # Intro (week1)
 
@@ -143,9 +145,14 @@ Forcast: parcel delivery > air freight in near future
   - sea level: $\rho = 1.25kg/m^3$
   - intercontinental airplane fly ~10000m: $\rho = 0.4135kg/m^3$
 
+  $V \propto \sqrt{1/\rho}$
+
 - What structural factor (i.e. not the engine) affects the cruising speed of fixed-wing  drones?
 
-  Speed is only proportional to wing loding (W/S) = Weight/Wing area
+  ~~Speed is only proportional to wing loading (W/S) = Weight/Wing area~~
+
+  - wing angle -> lift coefficient
+  - wing area
 
 - What are the two major drone applications in agriculture?
 
@@ -430,6 +437,14 @@ frame; control board; Motors and motor drivers (ESC, electronic speed controller
   imbalanced rotation speed
 
 - How the time of flight of multicopters can be increased?
+
+  1. Weight and drag reduction
+  2. Increase the specific power of the energy source
+  3. Docking station for charging/battery swapping
+  4. Tether for power supply
+  5. Improving efficiency via mechanical
+  6. Energy aware motion planning
+  7. Multi-modal operation
 
 - How the power consumption and total thrust evolve at different forward speeds in multicopters?
 
@@ -744,6 +759,7 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
   - Cons: requires tuning of Q and R Matrixes
 - Practical example-Foldable Drone
   - Attitude control (providing **torques**) requires adaptation since morphology has an impact on the rotation dynamics
+  - **should update matrix matrix A during flight**
 - Effect of Q and R matrixes
   - design parameters to penalize (1) the **state** variables and (2) the **control** signals
   - Large value: stabilize the system with less change in S**tate (Q) and Control input (R)**
@@ -772,11 +788,11 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
 
   - Fixed-tilt
 
-    don't need additional motors
+    easier controller; don't need additional motors; lightweight; cannot achieve optimal performance
 
   - Variable-tilt: change tilt of propellers to achieve desired motion
 
-    can achieve optimal configuration but with **complex mechatronics and control**
+    can achieve optimal configuration in given task but with complex mechatronics and control
 
 ## :ballot_box_with_check: Checkpoints
 
@@ -786,11 +802,13 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
 
   - Effectiveness matrix: 4x6
 
-  - Controller allocation: 6x4
+  - **Controller allocation**: 6x4
 
     Output: 6 motors; input B x (3torque + 1thrust)
-
-- transformation relationship to torque and thrust for each rotor
+    
+    最底层的控制，就是输入是torque+thrust，输出是n个电机的转速
+    
+  - Effectiveness： transformation relationship to torque and thrust for each rotor
 
 - Why do we use the **pseudo inverse** instead of standard matrix inverse to compute the control allocation matrix from the actuator effectiveness matrix?
 
@@ -802,9 +820,9 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
 
 - What are the input and output of the rate controller?
 
-  Input: rate setpoint
+  Input: angle rate setpoint + estimated angle rate
 
-  Output: generated angle torque
+  Output: generated angle **torque**
 
 - What happens when an attitude setpoint [0 0 pi/2] is applied?
 
@@ -812,15 +830,19 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
 
 - What are the input and output of the attitude controller in a cascaded architecture?
 
-  Input: quaternion setpoint
+  Input: desired quaternion setpoint **+ estimated** quaternion
 
   Output: generated angle rotation rate
 
-- What is the output of the attitude controller in a cascaded architecture?
-
-  :construction: Output: generated angle rotation rate?
-
 - How to compute attitude error quaternion from the estimated attitude quaternion and the attitude setpoint quaternion?
+
+  1. compute quaternion error
+
+     $\boldsymbol{q}_{e r r}=\boldsymbol{q}_{\boldsymbol{r e f}} \otimes \boldsymbol{q}_{m}^{*}$
+
+  2. calculate angular errors
+
+     $ \left[\begin{array}{c} \Phi_{e} \\ \Theta_{e} \\ \Psi_{e} \end{array}\right] \approx \operatorname{sgn}\left(q_{e}^{0}\right)\left[\begin{array}{l} 2 q_{e}^{1} \\ 2 q_{e}^{2} \\ 2 q_{e}^{3} \end{array}\right]$
 
 # State Estimation (week3&4)
 
@@ -859,41 +881,384 @@ $v_{l}=p+R_{p}^{l} v_{p}=p+R_{b}^{l} R_{g}^{b} R_{c}^{g} R_{i}^{c} R_{p}^{i} v_{
 
 <img src="./pics/aerial/week3_dynamical_system.png" alt="week3_dynamical_system" style="zoom:50%;" />
 
+### Estimation error
+
+<img src="./pics/aerial/week4_observer.png" alt="week4_observer" style="zoom:50%;" />
+
+- observer error
+
+  $\dot{e}_{o b s}=(\boldsymbol{A}-\boldsymbol{K} \boldsymbol{C}) \boldsymbol{e}_{o b s} \rightarrow 0$ => $e_{o b s}(t)=e^{(\boldsymbol{A}-\boldsymbol{K} \boldsymbol{C}) t} e_{o b s}\left(t_{0}\right)$
+
+  - with linear model
+
+    $\dot{x} = Ax + Bu$
+
+    $\dot{\hat{x}} = A\hat{x} + Bu + K (y-\hat{y})$
+
+    $e_{obs} = x - \hat{x}$
+
+- if A-KC <0, the error will lead to 0 when t -> infinity
+
+- How to choose K?
+
+  - gives control on the decay rate of the error function
+  - similar to P gain in control (if too big, estimation will oscillate)
+
 ## State Estimation for stochastic systems
 
 ### Recap of fundamental concepts
 
+- Mean and variance encode the **a‐priori knowledge** of the random variable
+
+  - w: Process noise
+  - v: Measurement noise
+
+  $\dot{\boldsymbol{x}}=\boldsymbol{A} \boldsymbol{x}+\boldsymbol{B} \boldsymbol{u}+\boldsymbol{w}$
+  $\boldsymbol{y}=\boldsymbol{C} \boldsymbol{x}+\boldsymbol{D} \boldsymbol{u}+v$
+
+- What is the **a‐priori information** about uncertainty in our problems?
+
+  W/V are known but w/v are zero-mean
+
+  - W: **covariance matrix** associated to **process** noise
+  - V: c**ovariance matrix** associated to **measurement** noise
+
+- What is the statistical **independence** among the values of a random variable in time?
+
+  $E\left[\boldsymbol{w}(k) \boldsymbol{w}^{T}(k+n)\right]=0 \quad \forall n>0$
+  $E\left[\boldsymbol{v}(k) \boldsymbol{v}^{T}(k+n)\right]=0 \quad \forall n>0$
+  $+$
+  $E[\boldsymbol{w}(k)]=E[\boldsymbol{v}(k)]=0$
+
+  **white noise** stochastic processes -> 期望值都是0
+
 ### Kalman filter (KF)
+
+- example: estimate drone’s roll angle
+
+  - x: Drone’s roll angle
+  - u: Roll Body rate
+  - y: Drone’s roll angle (through IMU)
+  - $w \sim N (0, Q)$: process error **(only in the dynamics not in estimator!)**
+  - $v \sim N (0, R)$: measurement error **(only in the dynamics not in estimator!)**
+
+  <img src="./pics/aerial/week5_kf.png" alt="week5_kf" style="zoom:50%;" />
+
+  - initial state estimate
+  - -> predicted state estimate
+  - \+ measurement
+  - => Optimal state estimate
+
+  <img src="./pics/aerial/week4_kf_equ.png" alt="week4_kf_equ" style="zoom: 80%;" />
+
+  Prediction (A-Priori) + Update
 
 use Gaussians to implement a Bayesian filter. That’s all the **Kalman filter** is - a Bayesian filter that uses Gaussians
 
+#### PREDICTION
+
+- state $\hat{x}_{k}^{-}=A \hat{x}_{k-1}+B u_{k}$
+
+- error covariance $P_{k}^{-}=A P_{k-1} A^{T}+Q$
+
+  keep track not only the state but also the covariance (will keep increase)
+
+#### UPDATE
+
+- KF Gain $K_{k}=\dfrac{P_{k}^{-} C^{T}}{C P_{k}^{-} C^{T}+R}$
+
+  - trust more in model y_k
+
+    R-> 0 => K_k = 1/C => x_k = y_k/C
+
+  - trust more in measurement x_k
+
+    P_k  -> 0 =>K_k = 0 =>x_k = x_k^{_}
+
+- Update state $\hat{x}_{k}=\hat{x}_{k}^{-}+K_{k}\left(y_{k}-C \hat{x}_{k}^{-}\right)$
+
+- $P_{k}=\left(I-K_{k} C\right) P_{K}^{-}$
+
+  minimize the Covariance
+
+### sensor fusion on a quadrotor
+
+use multiply KF to achieve better estimation
+
+$\hat{x}_{k_{1 \times 1}}=\hat{x}_{k_{1 \times 1}}^{-}+K_{k_{1 \times n}}\left(y_{k_{n \times 1}}-C_{n \times 1} \hat{x}_{k_{1 \times 1}}^{-}\right)$
+
 ### Intro to EKF, UKF and particle filters
 
+#### EKF
+
+- **linearizes** the nonlinear function **around the mean of the current state estimate**
+
+##### Overview
+
+<img src="./pics/aerial/week4_ekf_equ.png" alt="week4_ekf_equ" style="zoom: 40%;" />
+
+- applied to nonlinear system
+- linearize around the state estimate value by computing Jacobian matrices
+
+##### Equations
+
+- Predication
+
+  $\hat{\boldsymbol{x}}_{k}^{-}=f\left(\hat{\boldsymbol{x}}_{k-1}^{-}, \boldsymbol{u}_{k}\right)$
+
+  $P_{k}^{-}=F P_{k-1} F^{T}+Q$
+
+  F-Computed Jacobian matrix
+
+  $\boldsymbol{F}=\left.\frac{\partial f}{\partial \boldsymbol{x}}\right|_{\hat{\boldsymbol{x}}_{k-1}, \boldsymbol{u}_{k}}$
+
+- Update
+
+  Near optimal Kalman Filter gain
+
+  $K_{k}=\dfrac{P_{k}^{-} H^{T}}{H P_{k}^{-} H^{T}+R_k}$
+
+#### UKF
+
+- take several points to compute/approximate probability distribution
+- choose sigma points according to algorithms
+
+#### Particle filters
+
+- Combines the results to estimate the mean and covariance of the state
+- !computationally intensive
+
+- Different UKF
+  - Not limited to a Gaussian distribution
+  - points are chosen randomly
+
+<img src="./pics/aerial/week5_state_estimation.png" alt="week5_state_estimation" style="zoom: 80%;" />
+
 ## State Estimation in aerial robotics
+
+### in lab settings
+
+- use MoCap to estimate position and velocity
+
+### Outdoor
+
+- Camera, Depth camera Sensor, ToF Range Sensor to estimate pose and height
 
 ## :ballot_box_with_check: Checkpoints
 
 - What structure does the Luenberger Observer remind you?
 
-  :construction: control loop?
+  closed-loop estimation for deterministic systems
 
 - What does the Kalman Filter (KF) gain do?
 
+  determine to trust either more on measurement or a-prior/model
+
 - For which kind of dynamical systems the KF is useful?
 
+  linear continuous system
+
+  !cannot work in discontinuous system
+
 - What do we need to know a-priori if we want to apply the KF?
+
+  state mean $x_k$ and error covariance $P_k$
+
 - What are the advantages/disadvantages of the **UKF** w.r.t an **EKF**?
+
+  EKF
+
+  - **need** linearization
+  - Not an optimal estimator (especially nonlinear)
+  - may quickly diverge (when incorrect model/wrong covariance init)
+  - may difficult to compute Jacobians
+
 - What are the advantages/disadvantages of a **particle filter** w.r.t an **UKF**?
 
-## :construction: Exercise summary
+  PF
+  - Not limited to a Gaussian distribution
+  - need more points → more computational time
+  - More accurate as long as having enough particles
 
+# :construction: Navigation (week5)
 
+## Velocity control
 
-# :construction: Navigation Methods (week5)
+- :construction: 如果低速飞行，不去调整yaw，不然可能会引起震荡！
 
-# :construction: Perception (week5)
+## Waypoint Navigation
 
-# :construction: Fixed-wing drones (week6)
+## Dubins Paths
+
+## Vector fields
+
+## :ballot_box_with_check: Checkpoints
+
+- Which component of the **acceleration setpoint is converted to roll angle?** To **pitch** angle?
+
+  - roll 
+  - pitch
+
+- Why is navigation based on fixed position setpoint inappropriate for fixed-wing drones?
+
+  - cannot do sharp turning
+
+- What type of segment compose a Dubins path?
+
+  - arcs of a minimal radius
+  - straight lines
+
+- In which case can we construct a RLR Dubins path?
+
+  distance of waypoints is less than the minimal diameter 
+
+- What happens when **centrifugal acceleration** is not taken into account in the formulation of a circle following vector field?
+
+  It will not follow the vectors and cross the circle lines
+
+# :construction: VIO & SLAM (week5)
+
+## VIO
+
+## SLAM
+
+## :ballot_box_with_check: Checkpoints
+
+- What is VIO/SLAM useful for?
+
+  - VIO: Visual inertial odometry
+
+    process of estimating the drone state (position, orientation, and velocity) by using only the inputs from Camera(s) and IMU(s)
+
+  - SLAM: Simultaneous Localization and Mapping
+
+- What are the sensors that can be used to do VIO/SLAM?
+
+  Camera(s) and IMU(s)
+
+- What is loop closure? 
+
+  the **recognition** of when the robot has returned to a **previously mapped region** and the use of this information to **reduce the uncertainty in the map estimate.**
+
+- What are the main three VIO paradigms?
+
+  - Filters
+    - Restrict inference process to **latest state of the system**
+  - Fixed-lag smoothers
+    - Restrict inference process **to a given time window**
+  - Full smoothers
+    - Estimate the **entire history of the states**
+    - More accurate
+    - Real‐time operation can become unfeasible
+
+- Why do we use a camera and an IMU for VIO?
+
+  - **Cheap and complementary to each other**
+
+  - Camera: **Precise** during **slow motion** and provide **rich information**
+
+    Limited output rate; Not robust to scenes with low texture, high speed motions
+
+  - IMU: **Scene independent** and **High** output **rate**
+  
+    Poor signal-to-noise ratio at low accelerations and angular velocities; Estimated motion tends to accumulate drift quickly
+
+# Fixed-wing drones (week6)
+
+## Introduction
+
+## Structure
+
+## Flight Mechanics
+
+### Control surface
+
+- Ailerons
+
+  - attached to the outboard trailing edge of both wings
+  - rotate the aircraft around the longitudinal axis (**roll**)
+
+- elevators
+
+  - hinged to the trailing edge of the horizontal stabilizer
+
+  - around the horizontal or lateral axis (pitch)
+
+- rudder
+
+  - hinged to the trailing edge of the vertical stabilizer
+  - causes an aircraft to yaw or move about the vertical axis
+
+### Stability
+
+longitudinal -> pitching
+
+lateral -> rolling
+
+ directional -> yawing
+
+## Energetics
+
+### Induced power
+
+- **Induced** drag is the drag on the wing that is due to lift
+
+### Profile and parasite power
+
+- The **total aerodynamic power** is obtained by multiplying the **drag force** by the **forward velocity**
+
+<img src="./pics/aerial/week6_power_fixed.png" alt="week6_power_fixed" style="zoom: 67%;" />
+
+## :ballot_box_with_check: Checkpoints
+
+- What are the main flight control surfaces in fixed-wing aircrafts?
+
+  - Ailerons
+
+    - attached to the outboard trailing edge of both wings
+    - rotate the aircraft around the longitudinal axis (**roll**)
+
+  - elevators
+
+    - hinged to the trailing edge of the horizontal stabilizer
+
+    - around the horizontal or lateral axis (pitch)
+
+  - rudder
+
+    - hinged to the trailing edge of the vertical stabilizer
+    - causes an aircraft to yaw or move about the vertical axis
+
+- What are the **main stabilization strategies** in fixed-wing aircrafts?
+
+  - Longitudinal stability
+
+    making CoG ahead of the aircraft
+
+  - Lateral stable
+
+    - Dihedral angle 翅膀上扬
+    - Keel effect and Weight distribution
+
+  - Vertical stability-pitch
+
+    making the side surface greater than ahead of the center of gravity
+
+- How is a flying wing/Tailless aircraft controlled and stabilized?
+
+  - upward reflex (上扬边缘) or elevons (ailerons+elevator) keeps pitch in equilibrium
+
+- What are the **main contributions to power consumption** in fixed-wing aircrafts?
+
+  - Pressure drag + Friction drag
+  
+  - **Induced** drag + Profile drag (wing) + Parasite drag (body)
+  
+    - Induced drag(powers proportional to 1/v)
+  
+      drag on the wing that is due to lift
+  
+    - Profile drag, Parasite drag (powers proportional to v^3) 
 
 # Aerial Swarms (week7)
 
@@ -1193,34 +1558,123 @@ The combination of centralized planning/control with external positioning has **
      - Input: Range and bearing of all perceived drones
      - Output: **velocity vector** resulting from Reynolds algorithm
 
-## Check points
+## :ballot_box_with_check: Check points
 
 - What information does each agent receive in the Reynolds flocking algorithm?
 
-  :construction: position and velocity of self and neighbor agents
+  position and velocity of self and neighbor agents
 
 - How are obstacles modeled in Reynold’s flocking
 
-  visual agent; integrate into equations with alignment and separation term
+  virtual agent; integrate into equations with **alignment and separation term** (non cohesion)
 
 - How is a migration point incorporated in flocking algorithms
 
-  :construction: add a velocity term?
+  add a migration velocity term
 
 - What does the Olfati-Saber algorithm ensure?
 
-  distance matching with potent ion function
+  No collision. The **acting force** will be zero when reach the preferred distance $d_{ref}$
 
 - What are the three steps of vision-based drone flocking algorithm?
 
-  1. Real-time drone detection
+  1. Real-time **drone detection**
 
-  2. Multi-agent state tracking
-  3. Potential-field-based control
+  2. Multi-agent **state tracking**
+  3. Potential-field-based **control**
 
   images from 4 cameras -> x,y coordinates of perceived drones in images -> Range and bearing of all perceived drones -> velocity vector
 
-# :construction: Flapping-Wing (week8)
+# Flapping-Wing (week8)
+
+## Introduction
+
+- **lift** and **thrust** generation, and **maneuvers** mostly obtained by **using the wings**
+- imitate the flapping-wing flight of birds, bats, and insects
+- **scale down better** then rotary crafts and fixed wing UAVs
+- **Challenges**:
+  - Increased mechanical and control complexity
+  - Complex modelling due to unsteady aerodynamics
+
+## Structure
+
+> categories were determined to be the tail (1) and wing design (2)
+
+- requires the use of a **tail for stability and/or control** purposes
+- g**enerate the lift and thrust forces** necessary for flight using flapping wings
+
+<img src="./pics/aerial/week8_flapping.png" alt="week8_flapping" style="zoom: 80%;" />
+
+## Flight mechanics - Lift generation
+
+- Flapping Wings
+
+  two wings are flapped to **produce both lift and thrust**, thus overcoming gravity and drag to provide sustained flight
+
+- Clapping
+
+  Increase of lift during the “clapping
+
+  **cancels out the vertical oscillations**
+
+- Morphing/folding
+
+  flap their wings downward, fold them in toward their body
+
+  minimum wing area during the upward flap -> minimize undesired negative lift
+
+### Lift generation in hovering flight
+
+#### Asymmetric hovering
+
+#### Symmetric hovering
+
+- produced during the entire wing stroke exploiting different unsteady mechanisms.
+  - Leading edge vortex
+  - Rotational forces
+  - Clap-and-flight motion
+
+#### Lift generation in forward flight
+
+Downstroke/Upstroke
+
+## Flight mechanics - Maneuvering
+
+> flapping wing MAVs can use the tail and / or the wings for control.
+
+- ail actuation
+  - Aircraft tail
+  - Aircraft tail with propeller for yaw and elevator for pitch
+  - Inverted V-tail
+- Wing actuation
+  - Changing the angle of incidence
+  - Tensioning the wing (拉紧机翼)
+
+## Energetics
+
+## :ballot_box_with_check: Checkpoints
+
+- What are the main types of **tail** designs found in flapping wing MAVs?
+  - Static
+  - Active
+  - Tailless
+- What are the main types of **wings** designs found in flapping wing MAVs?
+  - Flapping
+  - Clapping
+  - Morphing/Folding
+- What are the **main mechanisms** for **lift generation** in symmetric hovering flight?
+  - Leading edge vortex
+  - Rotational forces
+  - Clap-and-flight motion
+- What are the main **steering strategies** in flapping flight MAVs?
+  - Tail actuation
+    - Aircraft tail
+    - Aircraft tail with propeller for yaw and elevator for pitch
+    - Inverted V-tail
+  - Wing actuation
+    - Changing the angle of incidence
+    - Tensioning the wing (拉紧机翼)
+    - Controlling the stroke (拍打角度)
 
 # Drone Regulations (week8)
 
@@ -1238,24 +1692,24 @@ The combination of centralized planning/control with external positioning has **
 
   Trust, less difficult for innovation
 
-- 3 Pillar Concept / Drone Categories
+## 3 Pillar Concept / Drone Categories
 
-  1. Open-Within the legal framework (No Authorization required)
-  2. Specific-Not sufficiently safe (Authorization required)
-  3. Certified-Approved to accepted standards
+1. Open-Within the legal framework (No Authorization required)
+2. Specific-Not sufficiently safe (Authorization required)
+3. Certified-Approved to accepted standards
 
-- Act
+## Act
 
-  - **Ordinance on Special Category Aircraft**
-    - No authorization required for commercial flights
-    - No distinction between Unmanned Aircraft and Model Aircraft
-  - **DETEC Ordinance on Special Category Aircraft**
-    - No authorization below **30kg**
-    - Within direct visual contact (VLOS)
-    - Not within a distance <=100m around crowds
-  - **ANSP (Skyguide) or Airport responsibility**
-    - \> **5km** Distance to civil & military airports/aerodromes
-    - < **150m** AGL (Above Ground Level) within a CTR
+- **Ordinance on Special Category Aircraft**
+  - No authorization required for commercial flights
+  - No distinction between Unmanned Aircraft and Model Aircraft
+- **DETEC Ordinance on Special Category Aircraft**
+  - No authorization below **30kg**
+  - Within direct visual contact (VLOS)
+  - Not within a distance <=100m around crowds
+- **ANSP (Skyguide) or Airport responsibility**
+  - \> **5km** Distance to civil & military airports/aerodromes
+  - < **150m** AGL (Above Ground Level) within a CTR
 
 - Act in EU
   - Open/Specific/Certified
@@ -1263,29 +1717,63 @@ The combination of centralized planning/control with external positioning has **
     - restrictions: MTOM **25kg**
     - maximum flying altitude: **120m** 
 
-- Specific Category
+## Specific Category
 
-  > Application for an operating permit on the basis of the **SORA (Specific Operations Risk Assessment)**
+> Application for an operating permit on the basis of the **SORA (Specific Operations Risk Assessment)**
 
-  **Operational Volume = Flight Geography + Contingency Volume **
+**Operational Volume = Flight Geography + Contingency Volume **
 
-  <img src="./pics\/aerial/week9_regulation_SORA.jpg" alt="week9_regulation_SORA" style="zoom:60%;" />
+<img src="./pics\/aerial/week9_regulation_SORA.jpg" alt="week9_regulation_SORA" style="zoom:60%;" />
 
 - :question: Robustness Levels: Integrity + Assurance
 
-- U-Space
+## U-Space
 
-  > The U-space is a collection of decentralized services that collectively aim to safely and efficiently integrate drones into the airspace and enable drone operations alongside manned flight.
-  >
-  > https://www.bazl.admin.ch/bazl/en/home/good-to-know/drohnen/wichtigsten-regeln/uspace.html.html
-  >
-  > https://www.skyguide.ch/en/events-media-board/u-space-live-demonstration/
+> The U-space is a collection of decentralized services that collectively aim to safely and efficiently integrate drones into the airspace and enable drone operations alongside manned flight.
+>
+> https://www.bazl.admin.ch/bazl/en/home/good-to-know/drohnen/wichtigsten-regeln/uspace.html.html
+>
+> https://www.skyguide.ch/en/events-media-board/u-space-live-demonstration/
 
-  airspace in block to avoid collision and report the location for further path calculation
+airspace in block to avoid collision and report the location for further path calculation
 
-## Checkpoints
+- U-space is capable of ensuring the **smooth operation of all categories of drones, all types of missions and all drone users** in all operating environment
 
+## :ballot_box_with_check: Checkpoints
 
+- Federal Office of Civil Aviation FOCA
+
+- What defines the three drone categories?
+
+  1. **Open**-within the legal framework (No Authorization required)
+
+     low risk; maximum flying altitude: 120m
+
+  2. **Specific**-Not sufficiently safe (Authorization required)
+
+     enhanced risk
+
+  3. **Certified**-Approved to accepted standards
+
+     risk comparable to manned aviation
+
+- What is the SORA declaration?
+
+  - stands for Specific Operations Risk Assessment
+  - used for Specific Drone Categories
+  - assigning to a UAS-operation two classes of risk, i.e., ground risk model and air risk model
+
+  the multi-stage process of risk assessment aiming at risk analysis of certain unmanned aircraft operations, as well as defining necessary mitigations and robustness levels
+
+- Is FOCA authorization sufficient for operating drones in the “Specific” category?
+
+  No. FOCA authorization is required for the "Specific" category, but it is not sufficient because **other federal, cantonal, and communal authorities may require additional authorizations**
+
+- What is U-space?
+
+  :construction:  U-Space **provides a framework** to facilitate the implementation of **all** types of **operation** in all **classes** of airspace and all **types** of environment, while ensuring an orderly **coexistence with manned aviation and air traffic control.**
+
+  from U-Space: The airspace of the future
 
 # UAS Hardware (week9)
 
@@ -1508,13 +1996,13 @@ The combination of centralized planning/control with external positioning has **
 
 ### Characteristics
 
-- Diameter
+- **Diameter**
   - the length of prop from tip to tip
   - larger diameter are more efficient
-- Pitch
-  - the angle of attack in the propellers
+- **Pitch**
+  - measure how far will fly up
   - higher at the root (center) and lower at the tip
-- Number of blades
+- **Number of blades**
   - majority of propellers used in UAVs have two blades because of efficiency
   - 3 or 4 blades are more compact for a given thrust
 
@@ -1758,9 +2246,12 @@ Optic flow is detected by neurons in the lamina (椎板), whose response is aggr
 
 - Correlation between two adjacent, time-delayed contrast detectors | 两个相邻的延时对比检测器（小眼）之间的相关性
 
-  - photo receptor -> temporal delay -> correlation -> subtraction-
+  - photo receptor -> temporal delay -> correlation -> subtraction
 
+    <img src="./pics/aerial/week10_emd.png" alt="week10_emd" style="zoom: 50%;" />
+  
   - the speed of motion can be detected as the peak the motion
+  
   - **not** a **reliable** velocity estimator -> depends on temporal and
     <u>spatial frequency</u> -> cannot measure velocity objectively
 
@@ -1830,24 +2321,26 @@ $\frac{d I(n, m, t)}{d t}=0$
 
 - Influence of agent’s rotation and translation on optic flow and distance estimation
 
-  - rotation flow gives no information about distance; only proportional to the angular velocity of the agent
+  - **rotation** flow gives **no** **information** about **distance**; only **proportional to the angular velocity** of the agent
 
   - cannot calculate absolute distance if do not know speed
 
 - Influence of angular velocity, spatial frequency, and temporal frequency on EMD (elementry motion decoder)
 
-  :construction:
+  angular velocity and temporal frequency都是先增后减。
 
-  - angular velocity
-  - spatial frequency
-  -  temporal frequency
-
+  spatial frequency 越大，角速度的图越向后偏移
+  
 - Functioning of Image Interpolation Algorithm
 
   generate optical flow by computing **image shift** $s$ to minimize the overlap error
 
+  use derivation to minimize the overlap error
+
 - Methods for discounting rotational optic flow
 
+  用IMU估计角速度，然后算rotational optic flow再减去图片得到的即可
+  
   remove the rotational optical flow by using IMU to measure yaw angle
 
 # Adaptive Morphology in Flying Animals and Drones (week10)
@@ -1945,14 +2438,28 @@ $\frac{d I(n, m, t)}{d t}=0$
 
 - Trade-offs between aerial and ground locomotion that require adaptation
 
-  :construction: can use wing to fly and rotate wing to walk on the ground
+  - Actuator torque and speed
+
+    Fly require high speed and ground locomotion requires high torque. Few motor can satisfy both.
+
+  - Mass of center
+
+    Fly: a bit front , Ground walking: in the center
+
+  - Inner ratio
+
+    约等于wing span，飞的时候展开，地上收起来
 
 - Effects of wing and tail span on lift and drag coefficients, and on required power
 
   > Extending for aggressive flight while Tucking wing (折翼) for cruise flight
+>
+  > Tucking  need base speed to activate
 
   - **Tucking** -> **reduces power requirement** at high speeds
-  - **Extending** -> **increases lift**;
+  - **Extending** -> **increases lift**
+
+  <img src="./pics/aerial/week10_lishawk.png" alt="week10_lishawk" style="zoom: 67%;" />
 
 # Agile Flight (week11)
 

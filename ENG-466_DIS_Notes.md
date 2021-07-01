@@ -772,6 +772,266 @@ Bongard et al, Resilient Machines Through Continuous Self-Modeling, Science, 200
 
 - Co-optimization techniques (e.g., co-evolution) can be used to shape simultaneously hardware and software features or control and model/simulation features
 
+# Lecture10
+
+# Lecture11_12
+
+# Lecture13 An Introduction to Wireless Sensor Networks (WSN)
+
+## 13.1 Motivating applications
+
+### 13.1.1 Motivation
+
+- Micro-sensors, on-board processing, and wireless interfaces all feasible at very small scale
+- enable **spatially and temporally dense environmental monitoring** (week14)
+- enable precise, real-time alarm triggering
+
+### 13.1.2 Example projects
+
+- **Permasense**: gather rock, water and other environmental data to analyze the relation between **climate change and rock fall** 
+- **GITEWS**: monitor water and earthquake events/data for **early Tsunami Warning**
+- **Sensorscope**: gather temperature, humidity, wind, solar, soil data to monitor **environmental events with high density**
+
+## 13.2 The Sensorscope project
+
+### 13.2.1 Topology
+
+> sensor to detect Temperature/Humidity/Light
+
+1. SD card with enough memory to store data
+
+2. GPRS (General Packet Radio Services) - 2/3G
+
+   - Pros: simple; no restrictions in sensor locations
+
+   - Cons: server access point may be quite far from the stations; high energy requirement
+
+     - Power consumption 14x higher than **short range radio**
+
+       Sensor: 6 years; Long range radio: 4 hours with 4AA batteries
+
+     - Reasonable for sensor nodes deployed on vehicles! (OpenSense)
+
+3. Nodes **--Short range-->** Sink**--GPRS-->** Main station
+
+   week13_sink_topo
+
+   <img src="./pics/dis/week13_sink_topo.png" alt="week13_sink_topo" style="zoom:40%;" />
+
+### 13.2.2 Friis law (power decay in air)
+
+$\mathrm{L}[d B]=10 \log \dfrac{P_{t}}{P_{r}} \propto 20 \log \left(\frac{4 \pi R f}{c}\right) = 20 \log \left(\dfrac{4 \pi R}{\lambda}\right)$
+
+$P_{t}/P_r$-transmitted/received power; $R$-distance; $\lambda=c/f$-wave length
+
+- example: 5 Km on 868 MHz
+
+  - One hop of 5 km 106 dB
+  - Two hops of 2.5 km 99 dB
+
+  loss decrease with **shorter distance and multi-hops**
+
+### 13.2.3 Multi-hop WSNs
+
+<img src="./pics/dis/week13_multihop_topo.png" alt="week13_multihop_topo" style="zoom:40%;" />
+
+- Pros for network
+  - Less power requirement: Only one car battery
+  - Extended spatial coverage
+  - Multiple routes for stations to communicate
+  - Robustness with Auto configurable network
+- Cons
+  - more complicated
+  - Data rate not increased
+  - Unable to use directional antennas
+
+### 13.2.4 Multi-hop WSNs Implementation
+
+- **Neighborhood discovery**
+- Data routing
+- **Time synchronization**
+- Duty-cycling (radio management)
+
+#### 13.2.4.1 Neighborhood discovery
+
+- to discover the neighbor
+
+  sends HELLO message -> update their neighborhood table
+
+- main neighborhood info
+
+  - Distance to sink (how many hops from the sink中间多少站)
+  - Last time heard
+  - Link quality
+
+- remarks
+
+  - distance to the sink is stored more permanently 距离值一般变化较小
+  - can’t be done only once
+  - need to estimate link qualities
+
+- Variations of simple schema for link qualities estimation
+
+  - Each node sends **X beacons** per minute
+  - beacons received per minute are stored
+  - estimate over the past Y minutes **by counting losses**
+
+#### 13.2.4.2 Time Synchronization
+
+- Why?
+
+  Weather conditions, especially **temperature and humidity**, may have a significant **effect on hardware**
+
+  晶振 Crystal oscillators drift with temperature variation
+
+- Can do what with time sync?
+
+  - Send timestamp packets
+  - Synchronize actions
+
+- How to sync time?
+
+  - Fully decentralized <- get by itself
+
+  - **Partially centralized** <- propagated from reference nodes
+
+    **sink** serve as time reference node
+
+- Solutions
+
+  - Atomic clock receivers: cheap; limited coverage
+  - GNSS: high energy cost; high coverage
+  - GPRS: same as GNSS with less coverage
+
+## 13.3 DISAL Arduino Xbee Node
+
+- Arduino board as microcontroller
+- Zigbee transceiver (Xbee) for communication
+- Sensors (temperature, humidity, light)
+- 14 hours autonomy fully with battery
+
+## 13.4 Energy-saving design principles
+
+- **Energy saving** is a crucial driver
+- Sensing data are typically only collected for a particular application
+- **Large energy cost of communication** relative to **computation**
+
+### 13.4.1 Generalization: Friis Laws
+
+- Open environment
+
+  $\dfrac{P_{r}}{P_{t}}=G_{t} G_{r}\left(\dfrac{\lambda}{4 \pi R}\right)^{2}$
+
+  where $G_tG_r$-gain transmitting antenna/gain receiving antenna
+
+- cluttered, urban environment
+
+  $\dfrac{P_{r}}{P_{t}}=G_{t} G_{r}\left(\dfrac{\lambda}{4 \pi}\right)^{2} (\dfrac{1}{R})^n$
+
+  n between 2 and 5
+
+  在混乱环境下interference, absorption
+
+## 13.5 Examples
+
+> (distributed) intelligent algorithms for energy efficiency in wireless sensor networks
+
+## 13.6 Take Home Messages
+
+- WSNs represent a very promising technology for a number of applications
+- Environmental data are (usually) highly redundant
+- Embedded intelligence at the node/network level has the potential to remove that redundancy and save energy
+- AI techniques have been studied in simulation but they are difficult to bring to real systems because both partially predictable dynamic environmental processes and dynamic network conditions
+- Network stack may limit potential gains in energy saving of an intelligent algorithm; it is often a question of robustness versus efficiency
+
+# Lecture14-Distributed Sensing using Mobile Sensor Networks
+
+## 14.1 Motivation for dense sensing in environmental monitoring
+
+### 14.1.1 Air/Water Quality Monitoring Motivation
+
+- Air Quality Monitoring 
+  - Feature: location and time-dependent
+    - traffic chokepoints and rush hours
+    - urban canyons and weather
+    - industrial installation and activities
+  - Current solution
+    - Sparse, stationary and expensive stations
+    - Spatial interpolation
+- Water Quality Monitoring
+  - Feature: location and time-dependent
+  - Current solution
+    - Stationary research stations
+    - Operational boats
+
+### 14.1.2 Typical VS Distributed Environmental Monitoring
+
+- Typical: sparse sensing; expensive; estimation via models
+- **Distributed solution for augmentation existing measurements**: networked, mobile; small size and low-cost
+
+### 14.1.3 Air Quality Monitoring Solutions
+
+- Satellite-based remote sensing
+  - large coverage; sensitive to cloud coverage; low resolution
+- Stationary and expensive stations/Sparse sensor network
+  - Coarse models; mesoscale (中尺度)=1km^2
+- mobile high fidelity equipment
+  - Accurate but expensive
+
+## 14.2 The OpenSense project
+
+### 14.2.1 OpenSenseVision
+
+- Measurement data from low-cost/mobile sensor
+
+  Citizen-, consortium-, agency-operated sensors
+
+- Explanatory Variables
+
+  Land-use, meteorology, traffic
+
+- Result: **High-resolution pollution maps**
+
+  Spatiotemporally flexible, modeling; emphasis on **data-driven statistical modeling** methods
+
+- -> Exposure information
+
+  give information for Personal recommendations/health studies
+
+### 14.2.2 OpenSenseSensing Platform
+
+- mainly measure gas-phase pollutants, particulate matter(PM)
+- Gases sensors: small and low-cost but with **slow response time** and have **re-calibration need**
+- Particles sensors: **high cost** and **high sensitivity**
+- Mobility energy: mounted on public transport
+- Connectivity: GPRS->2/3G network
+
+### 14.2.3 Method Overview
+
+> Enable **high spatio-temporal resolution monitoring** of urban air quality through **mobile wireless sensor networks**
+
+1. System Design
+
+   Modular & flexible sensor node design
+
+2. Mobility Effects
+
+   Signal Reconstruction through Deconvolution
+
+   - **robot application** with sensor node to model the signal
+
+     Cycling between movement & stationary measurement
+
+     Customized air sampling systems
+
+3. Calibration
+
+   Novel model-based & mobility-aware approaches
+
+4. Mapping
+
+   Novel statistical techniques (Linear regression) heterogeneous data sources (Land-us/Traffic count/pollutant/Meteorological)
+
 # Misc. 
 
 - range and bearing 距离与方位
