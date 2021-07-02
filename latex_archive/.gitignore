@@ -1,0 +1,11 @@
+# folders
+
+# LaTeX generated files
+*.aux
+*.log
+*.out
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.synctex.gz

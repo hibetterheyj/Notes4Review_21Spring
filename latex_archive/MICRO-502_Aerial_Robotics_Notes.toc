@@ -1,0 +1,210 @@
+\contentsline {section}{MICRO-502 Aerial Robotics Notes}{5}{section*.2}%
+\contentsline {section}{Intro (week1)}{5}{section*.3}%
+\contentsline {subsection}{Overview}{5}{section*.4}%
+\contentsline {subsection}{Fixed wing Staying in the Air}{5}{section*.5}%
+\contentsline {subsection}{Maintaining constant speed V}{7}{section*.6}%
+\contentsline {subsection}{Major Application Fields}{7}{section*.7}%
+\contentsline {subsubsection}{For Agriculture}{8}{section*.8}%
+\contentsline {subsubsection}{For Energy}{8}{section*.9}%
+\contentsline {subsubsection}{For Public safety \& security}{8}{section*.10}%
+\contentsline {subsubsection}{For Delivery}{8}{section*.11}%
+\contentsline {paragraph}{Category}{8}{section*.12}%
+\contentsline {paragraph}{«Can Drones Deliver?»}{8}{section*.13}%
+\contentsline {paragraph}{Last-cm delivery - \href {https://dronistics.epfl.ch/}{Dronistics}}{9}{section*.14}%
+\contentsline {subsection}{☑️ Checkpoints}{9}{section*.15}%
+\contentsline {section}{Multicopters (week1)}{10}{section*.16}%
+\contentsline {subsection}{Introduction}{10}{section*.17}%
+\contentsline {subsubsection}{Rotorcrafts (helicopters vs multicopters)}{10}{section*.18}%
+\contentsline {subsubsection}{Pros and Cons}{10}{section*.19}%
+\contentsline {paragraph}{Pros-Easy to build and maintain}{10}{section*.20}%
+\contentsline {paragraph}{Cons}{11}{section*.21}%
+\contentsline {subsection}{Structure and Physics}{11}{section*.22}%
+\contentsline {subsubsection}{Main components}{11}{section*.23}%
+\contentsline {subsubsection}{Configuration}{11}{section*.24}%
+\contentsline {subsubsection}{Rotation speeds / Forces / Moments}{11}{section*.25}%
+\contentsline {subsubsection}{Hover conditions}{13}{section*.26}%
+\contentsline {subsection}{Flight mechanics}{13}{section*.27}%
+\contentsline {subsubsection}{Moving Up and Down}{13}{section*.28}%
+\contentsline {subsubsection}{Rotating in Yaw}{14}{section*.29}%
+\contentsline {subsubsection}{Rotation in Roll/Pitch}{14}{section*.30}%
+\contentsline {subsubsection}{Summary of equations}{14}{section*.31}%
+\contentsline {subsubsection}{Example-Translated flight}{14}{section*.32}%
+\contentsline {subsection}{Types of Multicopters}{16}{section*.33}%
+\contentsline {subsubsection}{Configuration}{16}{section*.34}%
+\contentsline {subsubsection}{Fully Actuated Multicopters}{16}{section*.35}%
+\contentsline {paragraph}{Features}{16}{section*.36}%
+\contentsline {paragraph}{Pros}{17}{section*.37}%
+\contentsline {paragraph}{Cons}{17}{section*.38}%
+\contentsline {subsection}{Energetics}{17}{section*.39}%
+\contentsline {subsubsection}{Energy in hovering}{17}{section*.40}%
+\contentsline {subsubsection}{Energy in forward flight of quadcopter}{18}{section*.41}%
+\contentsline {subsubsection}{Increase flight time}{19}{section*.42}%
+\contentsline {subsection}{☑️ Checkpoints}{19}{section*.43}%
+\contentsline {section}{Attitude representations (week2)}{20}{section*.44}%
+\contentsline {subsection}{3D Attitude representation- Euler Angles}{20}{section*.45}%
+\contentsline {subsection}{Quaternion}{22}{section*.46}%
+\contentsline {subsubsection}{Conversion}{24}{section*.47}%
+\contentsline {subsection}{Complex examples}{24}{section*.48}%
+\contentsline {subsection}{✖️ Checkpoints}{24}{section*.49}%
+\contentsline {section}{Control (week2\&3)}{25}{section*.50}%
+\contentsline {subsection}{Cascaded control Architecture}{25}{section*.51}%
+\contentsline {subsection}{Control allocation}{27}{section*.52}%
+\contentsline {subsubsection}{Method}{27}{section*.53}%
+\contentsline {subsubsection}{Remark}{27}{section*.54}%
+\contentsline {subsection}{Rate control}{29}{section*.55}%
+\contentsline {subsection}{Attitude control}{29}{section*.56}%
+\contentsline {subsubsection}{Full quaternion based attitude control for a quadrotor}{29}{section*.57}%
+\contentsline {subsection}{Control strategies for multicopters}{31}{section*.58}%
+\contentsline {subsubsection}{Linear}{31}{section*.59}%
+\contentsline {paragraph}{Examples}{31}{section*.60}%
+\contentsline {paragraph}{Features}{31}{section*.61}%
+\contentsline {paragraph}{PID controller}{31}{section*.62}%
+\contentsline {paragraph}{LQR/LQG}{31}{section*.63}%
+\contentsline {subsubsection}{Nonlinear}{32}{section*.64}%
+\contentsline {paragraph}{Examples}{32}{section*.65}%
+\contentsline {paragraph}{Features}{32}{section*.66}%
+\contentsline {subsection}{An introduction to fully actuated multirotor UAVs}{33}{section*.67}%
+\contentsline {subsection}{☑️ Checkpoints}{33}{section*.68}%
+\contentsline {section}{State Estimation (week3\&4)}{34}{section*.69}%
+\contentsline {subsection}{Introduction to State Estimation}{34}{section*.70}%
+\contentsline {subsubsection}{Why State Estimation in Robotics?}{34}{section*.71}%
+\contentsline {subsection}{Estimation for deterministic systems}{35}{section*.72}%
+\contentsline {subsubsection}{State Observer (or Luenberger Observer)}{35}{section*.73}%
+\contentsline {subsubsection}{Dynamical Systems}{36}{section*.74}%
+\contentsline {subsubsection}{Estimation error}{36}{section*.75}%
+\contentsline {subsection}{State Estimation for stochastic systems}{36}{section*.76}%
+\contentsline {subsubsection}{Recap of fundamental concepts}{36}{section*.77}%
+\contentsline {subsubsection}{Kalman filter (KF)}{38}{section*.78}%
+\contentsline {paragraph}{PREDICTION}{39}{section*.79}%
+\contentsline {paragraph}{UPDATE}{39}{section*.80}%
+\contentsline {subsubsection}{sensor fusion on a quadrotor}{39}{section*.81}%
+\contentsline {subsubsection}{Intro to EKF, UKF and particle filters}{40}{section*.82}%
+\contentsline {paragraph}{EKF}{40}{section*.83}%
+\contentsline {subparagraph}{Overview}{40}{section*.84}%
+\contentsline {subparagraph}{Equations}{40}{section*.85}%
+\contentsline {paragraph}{UKF}{40}{section*.86}%
+\contentsline {paragraph}{Particle filters}{41}{section*.87}%
+\contentsline {subsection}{State Estimation in aerial robotics}{41}{section*.88}%
+\contentsline {subsubsection}{in lab settings}{41}{section*.89}%
+\contentsline {subsubsection}{Outdoor}{41}{section*.90}%
+\contentsline {subsection}{☑️ Checkpoints}{41}{section*.91}%
+\contentsline {section}{🚧 Navigation (week5)}{42}{section*.92}%
+\contentsline {subsection}{Velocity control}{42}{section*.93}%
+\contentsline {subsection}{Waypoint Navigation}{42}{section*.94}%
+\contentsline {subsection}{Dubins Paths}{42}{section*.95}%
+\contentsline {subsection}{Vector fields}{42}{section*.96}%
+\contentsline {subsection}{☑️ Checkpoints}{42}{section*.97}%
+\contentsline {section}{🚧 VIO \& SLAM (week5)}{43}{section*.98}%
+\contentsline {subsection}{VIO}{43}{section*.99}%
+\contentsline {subsection}{SLAM}{43}{section*.100}%
+\contentsline {subsection}{☑️ Checkpoints}{43}{section*.101}%
+\contentsline {section}{Fixed-wing drones (week6)}{44}{section*.102}%
+\contentsline {subsection}{Introduction}{44}{section*.103}%
+\contentsline {subsection}{Structure}{44}{section*.104}%
+\contentsline {subsection}{Flight Mechanics}{44}{section*.105}%
+\contentsline {subsubsection}{Control surface}{44}{section*.106}%
+\contentsline {subsubsection}{Stability}{44}{section*.107}%
+\contentsline {subsection}{Energetics}{44}{section*.108}%
+\contentsline {subsubsection}{Induced power}{44}{section*.109}%
+\contentsline {subsubsection}{Profile and parasite power}{45}{section*.110}%
+\contentsline {subsection}{☑️ Checkpoints}{45}{section*.111}%
+\contentsline {section}{Aerial Swarms (week7)}{46}{section*.112}%
+\contentsline {subsection}{Intro}{46}{section*.113}%
+\contentsline {subsection}{Reynolds flocking algorithm (Reynolds, 1987)}{46}{section*.114}%
+\contentsline {subsubsection}{Reynolds flocking: model}{46}{section*.115}%
+\contentsline {subsubsection}{Reynolds flocking with migration}{49}{section*.116}%
+\contentsline {subsection}{Case: Aerial swarms for disaster mitigation}{49}{section*.117}%
+\contentsline {subsubsection}{Communication radius and turning angle}{49}{section*.118}%
+\contentsline {subsubsection}{Virtual agents for flocking with fixed-wing drones}{49}{section*.119}%
+\contentsline {subsection}{Reynolds flocking with obstacles (Virtual agents)}{51}{section*.120}%
+\contentsline {subsection}{Other models}{52}{section*.121}%
+\contentsline {subsubsection}{Vicsek model: particles in confined environments (密闭环境)}{52}{section*.122}%
+\contentsline {subsubsection}{Olfati-Saber model}{52}{section*.123}%
+\contentsline {subsection}{Drone Swarms}{54}{section*.124}%
+\contentsline {subsection}{Visual information in flocking}{55}{section*.125}%
+\contentsline {subsubsection}{Soria2019IRC-influence of limited visual sensing using Reynolds}{55}{section*.126}%
+\contentsline {subsubsection}{Schilling2019RAL-Learning to flock in simulation with vision}{57}{section*.127}%
+\contentsline {subsubsection}{Schilling2021RAL-Learning to flock outdoor with vision}{58}{section*.128}%
+\contentsline {subsection}{☑️ Check points}{60}{section*.129}%
+\contentsline {section}{Flapping-Wing (week8)}{60}{section*.130}%
+\contentsline {subsection}{Introduction}{60}{section*.131}%
+\contentsline {subsection}{Structure}{61}{section*.132}%
+\contentsline {subsection}{Flight mechanics - Lift generation}{61}{section*.133}%
+\contentsline {subsubsection}{Lift generation in hovering flight}{62}{section*.134}%
+\contentsline {paragraph}{Asymmetric hovering}{62}{section*.135}%
+\contentsline {paragraph}{Symmetric hovering}{62}{section*.136}%
+\contentsline {paragraph}{Lift generation in forward flight}{62}{section*.137}%
+\contentsline {subsection}{Flight mechanics - Maneuvering}{62}{section*.138}%
+\contentsline {subsection}{Energetics}{62}{section*.139}%
+\contentsline {subsection}{☑️ Checkpoints}{62}{section*.140}%
+\contentsline {section}{Drone Regulations (week8)}{63}{section*.141}%
+\contentsline {subsection}{3 Pillar Concept / Drone Categories}{64}{section*.142}%
+\contentsline {subsection}{Act}{64}{section*.143}%
+\contentsline {subsection}{Specific Category}{64}{section*.144}%
+\contentsline {subsection}{U-Space}{65}{section*.145}%
+\contentsline {subsection}{☑️ Checkpoints}{65}{section*.146}%
+\contentsline {section}{UAS Hardware (week9)}{66}{section*.147}%
+\contentsline {subsection}{Introduction}{66}{section*.148}%
+\contentsline {subsection}{Frame and materials}{67}{section*.149}%
+\contentsline {subsubsection}{materials comparison}{67}{section*.150}%
+\contentsline {subsubsection}{metric when considering materials}{67}{section*.151}%
+\contentsline {subsection}{Energy sources}{67}{section*.152}%
+\contentsline {subsubsection}{Category}{69}{section*.153}%
+\contentsline {subsubsection}{Energy and power density}{69}{section*.154}%
+\contentsline {subsubsection}{Li-Po batteries}{71}{section*.155}%
+\contentsline {paragraph}{Discharge Curves of Li-Po battery}{71}{section*.156}%
+\contentsline {paragraph}{Energy Curve of Li-Po battery}{72}{section*.157}%
+\contentsline {subsection}{Actuators}{72}{section*.158}%
+\contentsline {subsubsection}{Actuators for propulsion}{72}{section*.159}%
+\contentsline {paragraph}{Electric motor example-Brushless DC electric motors}{73}{section*.160}%
+\contentsline {subsubsection}{Actuators for control/maneuvering}{74}{section*.161}%
+\contentsline {paragraph}{Servomotors}{74}{section*.162}%
+\contentsline {paragraph}{Examples of Servomotors}{74}{section*.163}%
+\contentsline {subsection}{Propellers}{75}{section*.164}%
+\contentsline {subsubsection}{Characteristics}{75}{section*.165}%
+\contentsline {subsubsection}{Pitch and efficiency at different cruise speed}{76}{section*.166}%
+\contentsline {subsubsection}{Choose the right combination actuator and propeller}{76}{section*.167}%
+\contentsline {subsection}{Sensors}{77}{section*.168}%
+\contentsline {subsubsection}{Gyroscopes}{77}{section*.169}%
+\contentsline {subsubsection}{Accelerometers}{78}{section*.170}%
+\contentsline {subsubsection}{Magnetometers}{78}{section*.171}%
+\contentsline {subsubsection}{Pressure / Altitude sensors}{79}{section*.172}%
+\contentsline {subsubsection}{Airspeed sensors}{79}{section*.173}%
+\contentsline {subsubsection}{Global positioning system (GPS)}{80}{section*.174}%
+\contentsline {subsubsection}{Power sensors}{80}{section*.175}%
+\contentsline {subsubsection}{Optic flow cameras}{82}{section*.176}%
+\contentsline {subsection}{Autopilots}{82}{section*.177}%
+\contentsline {subsection}{Communication protocols}{82}{section*.178}%
+\contentsline {subsection}{✖️ Checkpoints}{82}{section*.179}%
+\contentsline {section}{Insect-inspired vision (week10)}{83}{section*.180}%
+\contentsline {subsection}{Optical flow}{83}{section*.181}%
+\contentsline {subsubsection}{For pure translational motion}{83}{section*.182}%
+\contentsline {subsection}{Sensors used for flight control}{85}{section*.183}%
+\contentsline {subsubsection}{Architecture of insect eyes and brains}{86}{section*.184}%
+\contentsline {subsubsection}{Elementary Motion Detector 初级运动检测器}{86}{section*.185}%
+\contentsline {subsubsection}{Experiment - Optomotor Response 视运动反应}{86}{section*.186}%
+\contentsline {subsubsection}{Wide-field, motion-specific neurons}{87}{section*.187}%
+\contentsline {subsection}{Optic Flow Computation}{87}{section*.188}%
+\contentsline {subsubsection}{Gradient Descent Methods}{87}{section*.189}%
+\contentsline {subsubsection}{Image Interpolation Algorithm --I2A}{87}{section*.190}%
+\contentsline {subsection}{Obstacle avoidance with I2A}{88}{section*.191}%
+\contentsline {subsection}{☑️ Checkpoints}{88}{section*.192}%
+\contentsline {section}{Adaptive Morphology in Flying Animals and Drones (week10)}{90}{section*.193}%
+\contentsline {subsection}{Bioinspired Mechanical Resilience}{90}{section*.194}%
+\contentsline {subsubsection}{How do insects cope with collisions?}{90}{section*.195}%
+\contentsline {subsection}{The Size Problem}{90}{section*.196}%
+\contentsline {subsubsection}{Self-deployable origami drone}{90}{section*.197}%
+\contentsline {subsubsection}{Origami Drone Wing}{90}{section*.198}%
+\contentsline {subsection}{Adaptive Morphology}{91}{section*.199}%
+\contentsline {subsection}{☑️ Checkpoints}{91}{section*.200}%
+\contentsline {section}{Agile Flight (week11)}{94}{section*.201}%
+\contentsline {subsubsection}{Autonomous drone racing}{94}{section*.202}%
+\contentsline {subsubsection}{Drone acrobatics}{95}{section*.203}%
+\contentsline {subsubsection}{Low-latency sensing}{95}{section*.204}%
+\contentsline {section}{Learning of flight controllers (week11)}{96}{section*.205}%
+\contentsline {subsubsection}{challenge1: Architecture/Input and Output representation}{96}{section*.206}%
+\contentsline {subsubsection}{challenge2: Data collection}{96}{section*.207}%
+\contentsline {paragraph}{Limitations of Imitation Learning -\textgreater {} RL}{97}{section*.208}%
+\contentsline {paragraph}{RL limitations}{97}{section*.209}%
+\contentsline {subsubsection}{challenge3: Guarantee the platform's safety during training and testing}{97}{section*.210}%
+\contentsline {subsubsection}{Takeaways}{98}{section*.211}%

@@ -104,7 +104,7 @@ fixed-wing generates by airflow
 - Long-range: fixed wing; combination of wing and rotors to cover long distance
 - Short-range: multicopter
 
-Forcast: parcel delivery > air freight in near future
+Forecast: parcel delivery > air freight in near future
 
 #### «Can Drones Deliver?»
 
@@ -122,13 +122,13 @@ Forcast: parcel delivery > air freight in near future
 
 - Economics: Electricity/Battery cost per km
 
-#### Last-cm delivery - Dronistics
+#### Last-cm delivery - [Dronistics](https://dronistics.epfl.ch/)
 
-- Packdrone + SimplyFly
+- PackDrone + SimplyFly
 
   Protective foldable cage; Redundant GPS
 
-- Temperature-control box
+- Temperature-control box for medicals
 
 ## :ballot_box_with_check: Checkpoints
 
@@ -171,7 +171,7 @@ Forcast: parcel delivery > air freight in near future
 |              | Fixed wing         | Flapping wing             | rotating wing                        |
 | ------------ | ------------------ | ------------------------- | ------------------------------------ |
 | **Examples** | airplanes, gliders | new robots                | helicopters, multicopters            |
-| **Pros**     | Fast; Efficient    | Efficient                 | Can hover;Highly maneuverable        |
+| **Pros**     | Fast; Efficient    | Efficient                 | Can hover; Highly maneuverable       |
 | **Cons**     | Cannot Hover       | Hard to build and control | Less efficient                       |
 | **Features** |                    | Scale down in size        | Vertical take-off and landing (VTOL) |
 
@@ -330,7 +330,7 @@ frame; control board; Motors and motor drivers (ESC, electronic speed controller
 
     need additional servo to roll/pitch the back motor
 
-- Hexacopter/Octacopter
+- Hexacopter/Octocopter
 
   - More lifting capacity -> more payload
   - **Redundancy**, so robust to failure
